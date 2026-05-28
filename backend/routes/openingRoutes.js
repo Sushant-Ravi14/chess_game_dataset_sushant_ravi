@@ -37,6 +37,18 @@ router.options('/gambits', (req, res) => {
   res.set('Allow', 'GET, OPTIONS').status(204).send();
 });
 
+router.options('/checkmates', (req, res) => {
+  res.set('Allow', 'GET, OPTIONS').status(204).send();
+});
+
+router.options('/rare', (req, res) => {
+  res.set('Allow', 'GET, OPTIONS').status(204).send();
+});
+
+router.options('/white-advantage', (req, res) => {
+  res.set('Allow', 'GET, OPTIONS').status(204).send();
+});
+
 router.options('/eco/:ecoCode', (req, res) => {
   res.set('Allow', 'GET, OPTIONS').status(204).send();
 });
@@ -53,6 +65,9 @@ router.get('/win-rates', openingController.getOpeningWinRates);
 router.get('/aggressive', openingController.getAggressiveOpenings);
 router.get('/defensive', openingController.getDefensiveOpenings);
 router.get('/gambits', openingController.getGambitOpenings);
+router.get('/checkmates', openingController.getFastestCheckmates);
+router.get('/rare', openingController.getRareOpenings);
+router.get('/white-advantage', openingController.getWhiteAdvantageOpenings);
 router.get('/eco/:ecoCode', openingController.getOpeningByEco);
 router.get('/', openingController.getAllOpenings);
 

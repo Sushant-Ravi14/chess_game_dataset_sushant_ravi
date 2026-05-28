@@ -148,6 +148,34 @@ const getGambitOpenings = async () => {
   return await Match.aggregate(pipeline);
 };
 
+const getFastestCheckmates = async () => {
+  const pipeline = getOpeningBasePipeline({ victory_status: 'mate' });
+  pipeline.push(
+    { $match: { totalGames: { $gte: 3 } } },
+    { $sort: { averageTurns: 1 } },
+    { $limit: 15 }
+  );
+  return await Match.aggregate(pipeline);
+};
+
+const getRareOpenings = async () => {
+  const pipeline = getOpeningBasePipeline();
+  pipeline.push(
+    { $sort: { totalGames: 1 } },
+    { $limit: 15 }
+  );
+  return await Match.aggregate(pipeline);
+};
+
+const getWhiteAdvantageOpenings = async () => {
+  const pipeline = getOpeningBasePipeline();
+  pipeline.push(
+    { $match: { whiteWinRate: { $gt: 50 }, totalGames: { $gte: 5 } } },
+    { $sort: { whiteWinRate: -1 } }
+  );
+  return await Match.aggregate(pipeline);
+};
+
 module.exports = {
   getAllOpenings,
   getPopularOpenings,
@@ -157,5 +185,8 @@ module.exports = {
   getOpeningWinRates,
   getAggressiveOpenings,
   getDefensiveOpenings,
-  getGambitOpenings
+  getGambitOpenings,
+  getFastestCheckmates,
+  getRareOpenings,
+  getWhiteAdvantageOpenings
 };

@@ -38,6 +38,18 @@ router.options('/:matchId/restore', (req, res) => {
   res.set('Allow', 'PATCH, OPTIONS').status(204).send();
 });
 
+router.options('/filter/rated', (req, res) => {
+  res.set('Allow', 'GET, OPTIONS').status(204).send();
+});
+
+router.options('/filter/unrated', (req, res) => {
+  res.set('Allow', 'GET, OPTIONS').status(204).send();
+});
+
+router.options('/filter/white-wins', (req, res) => {
+  res.set('Allow', 'GET, OPTIONS').status(204).send();
+});
+
 router.head('/', asyncHandler(async (req, res) => {
   const count = await Match.countDocuments({ isDeleted: { $ne: true } });
   res.set('X-Total-Count', count).status(200).send();
@@ -46,6 +58,9 @@ router.head('/', asyncHandler(async (req, res) => {
 router.get('/latest', matchController.getLatestMatches);
 router.get('/trending', matchController.getTrendingMatches);
 router.get('/random', matchController.getRandomMatch);
+router.get('/filter/rated', matchController.getRatedMatches);
+router.get('/filter/unrated', matchController.getUnratedMatches);
+router.get('/filter/white-wins', matchController.getWhiteWinsMatches);
 router.get('/', matchController.getAllMatches);
 router.post('/', validateCreateMatch, matchController.createMatch);
 router.get('/:matchId/moves', matchController.getMatchMoves);

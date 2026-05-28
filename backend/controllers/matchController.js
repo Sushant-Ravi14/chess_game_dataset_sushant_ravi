@@ -72,6 +72,21 @@ const restoreMatch = asyncHandler(async (req, res) => {
   sendSuccess(res, 200, 'Match restored successfully', match);
 });
 
+const getRatedMatches = asyncHandler(async (req, res) => {
+  const { data, meta } = await matchService.getRatedMatches(req.query);
+  sendSuccess(res, 200, 'Rated matches retrieved successfully', data, meta);
+});
+
+const getUnratedMatches = asyncHandler(async (req, res) => {
+  const { data, meta } = await matchService.getUnratedMatches(req.query);
+  sendSuccess(res, 200, 'Unrated matches retrieved successfully', data, meta);
+});
+
+const getWhiteWinsMatches = asyncHandler(async (req, res) => {
+  const { data, meta } = await matchService.getWhiteWinsMatches(req.query);
+  sendSuccess(res, 200, 'White win matches retrieved successfully', data, meta);
+});
+
 module.exports = {
   getAllMatches,
   getMatchById,
@@ -87,4 +102,7 @@ module.exports = {
   getRandomMatch, 
   archiveMatch, 
   restoreMatch, 
+  getRatedMatches,
+  getUnratedMatches,
+  getWhiteWinsMatches
 };

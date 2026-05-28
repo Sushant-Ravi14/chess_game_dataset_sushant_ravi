@@ -121,6 +121,48 @@ const getTrendingMatches = async (query) => {
   return { data: matches, meta };
 };
 
+const getRandomMatch = async () => {
+  const matches = await Match.aggregate([
+    { $match: { isDeleted: { $ne: true } } },
+    { $sample: { size: 1 } }
+  ]);
+  
+  if (matches.length === 0) {
+    throw Object.assign(new Error('No matches found'), { statusCode: 404 });
+  }
+  
+  return matches[0];
+};
+
+const archiveMatch = async (id) => {
+  const match = await getMatchById(id);
+  match.isArchived = true;
+  await match.save();
+  return match;
+};
+
+const restoreMatch = async (id) => {
+  let match = null;
+  const query = {};
+  
+  if (mongoose.Types.ObjectId.isValid(id)) {
+    match = await Match.findOne({ _id: id, ...query });
+  }
+  if (!match) {
+    match = await Match.findOne({ id, ...query });
+  }
+  
+  if (!match) {
+    throw Object.assign(new Error('Match not found'), { statusCode: 404 });
+  }
+
+  match.isArchived = false;
+  match.isDeleted = false;
+  match.isDeletedAt = null;
+  await match.save();
+  return match;
+};
+
 module.exports = {
   getAllMatches,
   getMatchById,
@@ -133,4 +175,7 @@ module.exports = {
   getMatchAnalysis,
   getLatestMatches,
   getTrendingMatches,
+  getRandomMatch,
+  archiveMatch,
+  restoreMatch,
 };

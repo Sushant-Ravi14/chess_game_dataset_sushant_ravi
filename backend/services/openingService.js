@@ -51,7 +51,6 @@ const getAllOpenings = async (query) => {
 
   const pipeline = getOpeningBasePipeline();
   
-  // Calculate total count first
   const countPipeline = [
     { $match: { isDeleted: { $ne: true } } },
     { $group: { _id: "$opening_eco" } },
@@ -61,7 +60,6 @@ const getAllOpenings = async (query) => {
   const totalCount = countResult.length > 0 ? countResult[0].count : 0;
   const meta = paginate(query, totalCount);
 
-  // Sorting
   let sortStage = { totalGames: -1 };
   if (query.sort) {
     let cleanSort = query.sort.trim();
@@ -98,8 +96,34 @@ const getTrendingOpenings = async (query) => {
   return await Match.aggregate(pipeline);
 };
 
+const getOpeningByEco = async (ecoCode) => {
+  const pipeline = getOpeningBasePipeline({ opening_eco: ecoCode });
+  const result = await Match.aggregate(pipeline);
+  if (result.length === 0) {
+    throw Object.assign(new Error(`Opening with ECO code ${ecoCode} not found`), { statusCode: 404 });
+  }
+  return result[0];
+};
+
+const searchOpenings = async (q) => {
+  const pipeline = getOpeningBasePipeline({
+    opening_name: { $regex: q, $options: 'i' }
+  });
+  pipeline.push({ $sort: { totalGames: -1 } }, { $limit: 15 });
+  return await Match.aggregate(pipeline);
+};
+
+const getOpeningWinRates = async () => {
+  const pipeline = getOpeningBasePipeline();
+  pipeline.push({ $sort: { totalGames: -1 } });
+  return await Match.aggregate(pipeline);
+};
+
 module.exports = {
   getAllOpenings,
   getPopularOpenings,
-  getTrendingOpenings
+  getTrendingOpenings,
+  getOpeningByEco,
+  searchOpenings,
+  getOpeningWinRates
 };

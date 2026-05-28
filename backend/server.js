@@ -17,6 +17,7 @@ const middlewareRoutes = require('./routes/middlewareRoutes');
 const protectedRoutes = require('./routes/protectedRoutes');
 const systemRoutes = require('./routes/systemRoutes');
 const systemController = require('./controllers/systemController');
+const optionsHeadMiddleware = require('./middlewares/optionsHeadMiddleware');
 const { sendError } = require('./utils/apiResponse');
 
 const app = express();
@@ -43,6 +44,8 @@ app.use(
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+app.use(optionsHeadMiddleware);
 app.use(morgan('dev'));
 
 app.use('/api/v1/matches', matchRoutes);

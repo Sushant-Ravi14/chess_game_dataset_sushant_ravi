@@ -8,6 +8,7 @@ const connectDB = require('./config/db');
 const matchRoutes = require('./routes/matchRoutes');
 const playerRoutes = require('./routes/playerRoutes');
 const openingRoutes = require('./routes/openingRoutes');
+const searchRoutes = require('./routes/searchRoutes');
 const { sendError } = require('./utils/apiResponse');
 
 const app = express();
@@ -39,6 +40,7 @@ app.use(morgan('dev'));
 app.use('/api/v1/matches', matchRoutes);
 app.use('/api/v1/players', playerRoutes); 
 app.use('/api/v1/openings', openingRoutes); 
+app.use('/api/v1/search', searchRoutes); 
 
 app.use((req, res, next) => {
   res.status(404);

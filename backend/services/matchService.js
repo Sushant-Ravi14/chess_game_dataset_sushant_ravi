@@ -25,15 +25,104 @@ const durationExpr = {
 
 const getAllMatches = async (query) => {
   const filter = buildFilter(query);
-  const sort = buildSort(query.sort);
-  
   const totalCount = await Match.countDocuments(filter);
   const meta = paginate(query, totalCount);
 
-  const matches = await Match.find(filter)
-    .sort(sort)
-    .skip(meta.skip)
-    .limit(meta.limit);
+  const pipeline = [
+    { $match: filter }
+  ];
+
+  let sortStage = { created_at: -1 }; // default sort: newest first
+
+  if (query.sort) {
+    let desc = false;
+    let field = query.sort.trim();
+    if (field.startsWith('-')) {
+      desc = true;
+      field = field.substring(1);
+    }
+    const sortDir = desc ? -1 : 1;
+
+    if (field === 'createdAt' || field === 'created_at') {
+      sortStage = { created_at: sortDir };
+    } else if (field === 'turns') {
+      pipeline.push({
+        $addFields: { turnsInt: { $toInt: "$turns" } }
+      });
+      sortStage = { turnsInt: sortDir };
+    } else if (field === 'white_rating') {
+      pipeline.push({
+        $addFields: { whiteRatingInt: { $toInt: "$white_rating" } }
+      });
+      sortStage = { whiteRatingInt: sortDir };
+    } else if (field === 'black_rating') {
+      pipeline.push({
+        $addFields: { blackRatingInt: { $toInt: "$black_rating" } }
+      });
+      sortStage = { blackRatingInt: sortDir };
+    } else if (field === 'winner') {
+      sortStage = { winner: sortDir };
+    } else if (field === 'time_control' || field === 'increment_code') {
+      sortStage = { increment_code: sortDir };
+    } else if (field === 'opening_name') {
+      sortStage = { opening_name: sortDir };
+    } else if (field === 'duration') {
+      pipeline.push({
+        $addFields: {
+          duration: { $subtract: [{ $toDouble: "$last_move_at" }, { $toDouble: "$created_at" }] }
+        }
+      });
+      sortStage = { duration: sortDir };
+    } else if (field === 'accuracy') {
+      pipeline.push({
+        $addFields: {
+          accuracy: { $add: [{ $mod: [{ $toInt: "$turns" }, 15] }, 80] }
+        }
+      });
+      sortStage = { accuracy: sortDir };
+    } else if (field === 'popularity') {
+      pipeline.push(
+        {
+          $lookup: {
+            from: "chessData",
+            let: { eco: "$opening_eco" },
+            pipeline: [
+              { $match: { $expr: { $eq: ["$opening_eco", "$$eco"] } } },
+              { $count: "count" }
+            ],
+            as: "popularityInfo"
+          }
+        },
+        {
+          $addFields: {
+            popularity: { $ifNull: [{ $arrayElemAt: ["$popularityInfo.count", 0] }, 0] }
+          }
+        }
+      );
+      sortStage = { popularity: sortDir };
+    } else {
+      const fieldMapping = {
+        createdAt: 'created_at',
+        created_at: 'created_at',
+        turns: 'turns',
+        white_rating: 'white_rating',
+        black_rating: 'black_rating',
+        winner: 'winner',
+        time_control: 'increment_code',
+        opening_name: 'opening_name',
+      };
+      const dbField = fieldMapping[field] || 'created_at';
+      sortStage = { [dbField]: sortDir };
+    }
+  }
+
+  pipeline.push(
+    { $sort: sortStage },
+    { $skip: meta.skip },
+    { $limit: meta.limit }
+  );
+
+  const matches = await Match.aggregate(pipeline);
 
   return { data: matches, meta };
 };
@@ -566,6 +655,61 @@ const getInfiniteMatches = async (query) => {
   };
 };
 
+const getShortestMatches = async (query) => {
+  const filter = buildFilter(query);
+  const totalCount = await Match.countDocuments(filter);
+  const meta = paginate(query, totalCount);
+
+  const pipeline = [
+    { $match: filter },
+    { $addFields: { turnsInt: { $toInt: "$turns" } } },
+    { $sort: { turnsInt: 1 } },
+    { $skip: meta.skip },
+    { $limit: meta.limit }
+  ];
+
+  const matches = await Match.aggregate(pipeline);
+  return { data: matches, meta };
+};
+
+const getLongestMatches = async (query) => {
+  const filter = buildFilter(query);
+  const totalCount = await Match.countDocuments(filter);
+  const meta = paginate(query, totalCount);
+
+  const pipeline = [
+    { $match: filter },
+    { $addFields: { turnsInt: { $toInt: "$turns" } } },
+    { $sort: { turnsInt: -1 } },
+    { $skip: meta.skip },
+    { $limit: meta.limit }
+  ];
+
+  const matches = await Match.aggregate(pipeline);
+  return { data: matches, meta };
+};
+
+const getHighestRatedMatches = async (query) => {
+  const filter = buildFilter(query);
+  const totalCount = await Match.countDocuments(filter);
+  const meta = paginate(query, totalCount);
+
+  const pipeline = [
+    { $match: filter },
+    {
+      $addFields: {
+        totalRating: { $add: [{ $toInt: "$white_rating" }, { $toInt: "$black_rating" }] }
+      }
+    },
+    { $sort: { totalRating: -1 } },
+    { $skip: meta.skip },
+    { $limit: meta.limit }
+  ];
+
+  const matches = await Match.aggregate(pipeline);
+  return { data: matches, meta };
+};
+
 module.exports = {
   getAllMatches,
   getMatchById,
@@ -597,5 +741,8 @@ module.exports = {
   getLowRatedMatches,
   getLongGamesMatches,
   getScrollMatches,
-  getInfiniteMatches
+  getInfiniteMatches,
+  getShortestMatches,
+  getLongestMatches,
+  getHighestRatedMatches
 };

@@ -7,6 +7,7 @@ const connectDB = require('./config/db');
 
 const matchRoutes = require('./routes/matchRoutes');
 const playerRoutes = require('./routes/playerRoutes');
+const openingRoutes = require('./routes/openingRoutes');
 const { sendError } = require('./utils/apiResponse');
 
 const app = express();
@@ -37,13 +38,13 @@ app.use(morgan('dev'));
 
 app.use('/api/v1/matches', matchRoutes);
 app.use('/api/v1/players', playerRoutes); 
+app.use('/api/v1/openings', openingRoutes); 
 
 app.use((req, res, next) => {
   res.status(404);
   next(new Error(`Route not found - [${req.method}] ${req.originalUrl}`));
 });
 
-// Global Error Handler
 app.use((err, req, res, next) => {
   const statusCode = err.statusCode || 500;
   const message = err.message || 'Internal Server Error';

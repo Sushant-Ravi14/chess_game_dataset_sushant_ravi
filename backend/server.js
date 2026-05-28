@@ -6,6 +6,7 @@ const morgan = require('morgan');
 const connectDB = require('./config/db');
 
 const matchRoutes = require('./routes/matchRoutes');
+const playerRoutes = require('./routes/playerRoutes');
 const { sendError } = require('./utils/apiResponse');
 
 const app = express();
@@ -34,10 +35,9 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan('dev'));
 
-// Mount Route
 app.use('/api/v1/matches', matchRoutes);
+app.use('/api/v1/players', playerRoutes); 
 
-// Catch-all 404
 app.use((req, res, next) => {
   res.status(404);
   next(new Error(`Route not found - [${req.method}] ${req.originalUrl}`));

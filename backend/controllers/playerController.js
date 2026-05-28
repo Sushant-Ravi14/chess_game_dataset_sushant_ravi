@@ -47,6 +47,21 @@ const getPlayerDrawRate = asyncHandler(async (req, res) => {
   sendSuccess(res, 200, 'Player draw rate retrieved successfully', drawRate);
 });
 
+const getRecentMatches = asyncHandler(async (req, res) => {
+  const { data, meta } = await playerService.getRecentMatches(req.params.username, req.query);
+  sendSuccess(res, 200, 'Recent matches retrieved successfully', data, meta);
+});
+
+const getTopRatedPlayers = asyncHandler(async (req, res) => {
+  const players = await playerService.getTopRatedPlayers(req.query);
+  sendSuccess(res, 200, 'Top rated players retrieved successfully', players);
+});
+
+const getMostActivePlayers = asyncHandler(async (req, res) => {
+  const players = await playerService.getMostActivePlayers(req.query);
+  sendSuccess(res, 200, 'Most active players retrieved successfully', players);
+});
+
 module.exports = {
   getAllPlayers,
   getPlayerByUsername,
@@ -57,4 +72,7 @@ module.exports = {
   getPlayerWinRate,
   getPlayerLossRate,
   getPlayerDrawRate,
+  getRecentMatches, 
+  getTopRatedPlayers, 
+  getMostActivePlayers, 
 };

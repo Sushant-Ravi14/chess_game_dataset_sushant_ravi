@@ -239,6 +239,28 @@ const getPlayerDrawRate = async (username) => {
   return { drawRate };
 };
 
+const getRecentMatches = async (username, query) => {
+  return await getPlayerHistory(username, query);
+};
+
+const getTopRatedPlayers = async (query) => {
+  const limit = Math.min(100, Math.max(1, parseInt(query.limit) || 10));
+  const pipeline = getPlayerAggregatePipeline(null);
+  
+  pipeline.push({ $sort: { currentRating: -1 } }, { $limit: limit });
+  const players = await Match.aggregate(pipeline);
+  return players;
+};
+
+const getMostActivePlayers = async (query) => {
+  const limit = Math.min(100, Math.max(1, parseInt(query.limit) || 10));
+  const pipeline = getPlayerAggregatePipeline(null);
+  
+  pipeline.push({ $sort: { totalGames: -1 } }, { $limit: limit });
+  const players = await Match.aggregate(pipeline);
+  return players;
+};
+
 module.exports = {
   getAllPlayers,
   getPlayerByUsername,
@@ -249,5 +271,7 @@ module.exports = {
   getPlayerWinRate,
   getPlayerLossRate,
   getPlayerDrawRate,
+  getRecentMatches, 
+  getTopRatedPlayers, 
+  getMostActivePlayers, 
 };
-

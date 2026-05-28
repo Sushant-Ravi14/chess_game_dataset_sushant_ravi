@@ -9,11 +9,23 @@ router.options('/', (req, res) => {
   res.set('Allow', 'GET, OPTIONS').status(204).send();
 });
 
+router.options('/top-rated', (req, res) => {
+  res.set('Allow', 'GET, OPTIONS').status(204).send();
+});
+
+router.options('/top-active', (req, res) => {
+  res.set('Allow', 'GET, OPTIONS').status(204).send();
+});
+
 router.options('/:username', (req, res) => {
   res.set('Allow', 'GET, OPTIONS').status(204).send();
 });
 
 router.options('/:username/history', (req, res) => {
+  res.set('Allow', 'GET, OPTIONS').status(204).send();
+});
+
+router.options('/:username/recent', (req, res) => {
   res.set('Allow', 'GET, OPTIONS').status(204).send();
 });
 
@@ -48,15 +60,17 @@ router.head('/', asyncHandler(async (req, res) => {
   res.set('X-Total-Players-Count', uniquePlayers.size).status(200).send();
 }));
 
+router.get('/top-rated', playerController.getTopRatedPlayers);
+router.get('/top-active', playerController.getMostActivePlayers);
 router.get('/', playerController.getAllPlayers);
 router.get('/:username/history', playerController.getPlayerHistory);
+router.get('/:username/recent', playerController.getRecentMatches);
 router.get('/:username/stats', playerController.getPlayerStats);
 router.get('/:username/openings', playerController.getPlayerOpenings);
 router.get('/:username/rating-history', playerController.getPlayerRatingHistory);
 router.get('/:username/win-rate', playerController.getPlayerWinRate);
 router.get('/:username/loss-rate', playerController.getPlayerLossRate);
 router.get('/:username/draw-rate', playerController.getPlayerDrawRate);
-
 router.get('/:username', playerController.getPlayerByUsername);
 
 module.exports = router;

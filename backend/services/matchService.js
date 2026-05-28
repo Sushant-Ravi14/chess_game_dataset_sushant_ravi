@@ -1,3 +1,4 @@
+const mongoose = require('mongoose'); 
 const Match = require('../models/Match');
 const buildFilter = require('../utils/buildFilter');
 const buildSort = require('../utils/buildSort');
@@ -18,6 +19,33 @@ const getAllMatches = async (query) => {
   return { data: matches, meta };
 };
 
+
+const getMatchById = async (id) => {
+  let match = null;
+  const query = { isDeleted: { $ne: true } };
+
+  if (mongoose.Types.ObjectId.isValid(id)) {
+    match = await Match.findOne({ _id: id, ...query });
+  }
+  
+  if (!match) {
+    match = await Match.findOne({ id, ...query });
+  }
+
+  if (!match) {
+    throw Object.assign(new Error('Match not found'), { statusCode: 404 });
+  }
+  return match;
+};
+
+const createMatch = async (data) => {
+  const match = new Match(data);
+  await match.save();
+  return match;
+};
+
 module.exports = {
   getAllMatches,
+  getMatchById,
+  createMatch,
 };

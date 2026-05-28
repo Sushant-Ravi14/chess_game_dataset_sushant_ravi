@@ -52,10 +52,50 @@ const getCheckmateRate = async () => {
   return (count / total) * 100;
 };
 
+const getResignationRate = async () => {
+  const total = await getTotalMatches();
+  if (total === 0) return 0;
+  const count = await Match.countDocuments({ victory_status: 'resign', isDeleted: { $ne: true } });
+  return (count / total) * 100;
+};
+
+const getTimeoutRate = async () => {
+  const total = await getTotalMatches();
+  if (total === 0) return 0;
+  const count = await Match.countDocuments({ victory_status: { $in: ['outoftime', 'timeout'] }, isDeleted: { $ne: true } });
+  return (count / total) * 100;
+};
+
+const getWhiteWinRate = async () => {
+  const total = await getTotalMatches();
+  if (total === 0) return 0;
+  const count = await Match.countDocuments({ winner: 'white', isDeleted: { $ne: true } });
+  return (count / total) * 100;
+};
+
+const getBlackWinRate = async () => {
+  const total = await getTotalMatches();
+  if (total === 0) return 0;
+  const count = await Match.countDocuments({ winner: 'black', isDeleted: { $ne: true } });
+  return (count / total) * 100;
+};
+
+const getDrawRate = async () => {
+  const total = await getTotalMatches();
+  if (total === 0) return 0;
+  const count = await Match.countDocuments({ winner: 'draw', isDeleted: { $ne: true } });
+  return (count / total) * 100;
+};
+
 module.exports = {
   getTotalMatches,
   getTotalPlayers,
   getAverageRating,
   getTopOpenings,
-  getCheckmateRate
+  getCheckmateRate,
+  getResignationRate,
+  getTimeoutRate,
+  getWhiteWinRate,
+  getBlackWinRate,
+  getDrawRate
 };

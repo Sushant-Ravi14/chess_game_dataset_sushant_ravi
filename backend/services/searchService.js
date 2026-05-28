@@ -195,6 +195,100 @@ const getPopularSearches = async () => {
   return sorted;
 };
 
+const advancedSearch = async (params, query) => {
+  const filter = { isDeleted: { $ne: true } };
+
+  if (params.rated) {
+    const isRated = params.rated === 'true';
+    filter.rated = isRated ? { $in: ['TRUE', 'True'] } : { $in: ['FALSE', 'False'] };
+  }
+
+  if (params.winner) {
+    filter.winner = params.winner.toLowerCase();
+  }
+
+  if (params.opening_eco) {
+    filter.opening_eco = params.opening_eco.toUpperCase();
+  }
+
+  if (params.victory_status) {
+    filter.victory_status = params.victory_status.toLowerCase();
+  }
+
+  const andExprs = [];
+  if (params.min_rating) {
+    andExprs.push({ $gte: [{ $toInt: "$white_rating" }, parseInt(params.min_rating, 10)] });
+    andExprs.push({ $gte: [{ $toInt: "$black_rating" }, parseInt(params.min_rating, 10)] });
+  }
+
+  if (params.max_rating) {
+    andExprs.push({ $lte: [{ $toInt: "$white_rating" }, parseInt(params.max_rating, 10)] });
+    andExprs.push({ $lte: [{ $toInt: "$black_rating" }, parseInt(params.max_rating, 10)] });
+  }
+
+  if (andExprs.length > 0) {
+    filter.$expr = { $and: andExprs };
+  }
+
+  const totalCount = await Match.countDocuments(filter);
+  const meta = paginate(query, totalCount);
+
+  const matches = await Match.find(filter)
+    .skip(meta.skip)
+    .limit(meta.limit);
+
+  return { data: matches, meta };
+};
+
+const searchByRating = async (rating, query) => {
+  const r = parseInt(rating, 10);
+  const min = r - 50;
+  const max = r + 50;
+
+  const filter = {
+    isDeleted: { $ne: true },
+    $expr: {
+      $or: [
+        { $and: [{ $gte: [{ $toInt: "$white_rating" }, min] }, { $lte: [{ $toInt: "$white_rating" }, max] }] },
+        { $and: [{ $gte: [{ $toInt: "$black_rating" }, min] }, { $lte: [{ $toInt: "$black_rating" }, max] }] }
+      ]
+    }
+  };
+
+  const totalCount = await Match.countDocuments(filter);
+  const meta = paginate(query, totalCount);
+
+  const matches = await Match.find(filter)
+    .skip(meta.skip)
+    .limit(meta.limit);
+
+  return { data: matches, meta };
+};
+
+const searchByDateRange = async (from, to, query) => {
+  const fromMs = new Date(from).getTime();
+  const toMs = new Date(to).getTime();
+
+  const filter = {
+    isDeleted: { $ne: true },
+    $expr: {
+      $and: [
+        { $gte: [{ $toDouble: "$created_at" }, fromMs] },
+        { $lte: [{ $toDouble: "$created_at" }, toMs] }
+      ]
+    }
+  };
+
+  const totalCount = await Match.countDocuments(filter);
+  const meta = paginate(query, totalCount);
+
+  const matches = await Match.find(filter)
+    .skip(meta.skip)
+    .limit(meta.limit);
+
+  return { data: matches, meta };
+};
+
 module.exports = {
   searchMatches,
   searchPlayers,
@@ -204,5 +298,8 @@ module.exports = {
   fuzzySearch,
   autocomplete,
   getRecentSearches,
-  getPopularSearches
+  getPopularSearches,
+  advancedSearch,
+  searchByRating,
+  searchByDateRange
 };

@@ -39,6 +39,18 @@ router.options('/popular', (req, res) => {
   res.set('Allow', 'GET, OPTIONS').status(204).send();
 });
 
+router.options('/advanced', (req, res) => {
+  res.set('Allow', 'GET, OPTIONS').status(204).send();
+});
+
+router.options('/player-rating', (req, res) => {
+  res.set('Allow', 'GET, OPTIONS').status(204).send();
+});
+
+router.options('/date-range', (req, res) => {
+  res.set('Allow', 'GET, OPTIONS').status(204).send();
+});
+
 router.get('/matches', searchController.searchMatches);
 router.get('/players', searchController.searchPlayers);
 router.get('/openings', searchController.searchOpenings);
@@ -48,5 +60,8 @@ router.get('/fuzzy', searchController.fuzzySearch);
 router.get('/autocomplete', searchController.autocomplete);
 router.get('/recent', searchController.getRecentSearches);
 router.get('/popular', searchController.getPopularSearches);
+router.get('/advanced', searchController.advancedSearch);
+router.get('/player-rating', searchController.searchByRating);
+router.get('/date-range', searchController.searchByDateRange);
 
 module.exports = router;

@@ -36,11 +36,29 @@ const getOpeningWinRates = asyncHandler(async (req, res) => {
   sendSuccess(res, 200, 'Opening win rates retrieved successfully', winRates);
 });
 
+const getAggressiveOpenings = asyncHandler(async (req, res) => {
+  const openings = await openingService.getAggressiveOpenings();
+  sendSuccess(res, 200, 'Aggressive openings retrieved successfully', openings);
+});
+
+const getDefensiveOpenings = asyncHandler(async (req, res) => {
+  const openings = await openingService.getDefensiveOpenings();
+  sendSuccess(res, 200, 'Defensive openings retrieved successfully', openings);
+});
+
+const getGambitOpenings = asyncHandler(async (req, res) => {
+  const openings = await openingService.getGambitOpenings();
+  sendSuccess(res, 200, 'Gambit openings retrieved successfully', openings);
+});
+
 module.exports = {
   getAllOpenings,
   getPopularOpenings,
   getTrendingOpenings,
   getOpeningByEco,
   searchOpenings,
-  getOpeningWinRates
+  getOpeningWinRates,
+  getAggressiveOpenings,
+  getDefensiveOpenings,
+  getGambitOpenings
 };

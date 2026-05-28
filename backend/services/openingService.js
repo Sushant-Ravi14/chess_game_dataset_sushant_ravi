@@ -119,11 +119,43 @@ const getOpeningWinRates = async () => {
   return await Match.aggregate(pipeline);
 };
 
+const getAggressiveOpenings = async () => {
+  const pipeline = getOpeningBasePipeline();
+  pipeline.push(
+    { $match: { whiteWinRate: { $gt: 45 }, totalGames: { $gte: 5 } } },
+    { $sort: { whiteWinRate: -1 } },
+    { $limit: 15 }
+  );
+  return await Match.aggregate(pipeline);
+};
+
+const getDefensiveOpenings = async () => {
+  const pipeline = getOpeningBasePipeline();
+  pipeline.push(
+    { $match: { drawRate: { $gt: 10 }, totalGames: { $gte: 5 } } },
+    { $sort: { drawRate: -1 } },
+    { $limit: 15 }
+  );
+  return await Match.aggregate(pipeline);
+};
+
+const getGambitOpenings = async () => {
+  const pipeline = getOpeningBasePipeline();
+  pipeline.push(
+    { $match: { isGambit: true } },
+    { $sort: { totalGames: -1 } }
+  );
+  return await Match.aggregate(pipeline);
+};
+
 module.exports = {
   getAllOpenings,
   getPopularOpenings,
   getTrendingOpenings,
   getOpeningByEco,
   searchOpenings,
-  getOpeningWinRates
+  getOpeningWinRates,
+  getAggressiveOpenings,
+  getDefensiveOpenings,
+  getGambitOpenings
 };

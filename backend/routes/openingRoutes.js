@@ -25,6 +25,18 @@ router.options('/win-rates', (req, res) => {
   res.set('Allow', 'GET, OPTIONS').status(204).send();
 });
 
+router.options('/aggressive', (req, res) => {
+  res.set('Allow', 'GET, OPTIONS').status(204).send();
+});
+
+router.options('/defensive', (req, res) => {
+  res.set('Allow', 'GET, OPTIONS').status(204).send();
+});
+
+router.options('/gambits', (req, res) => {
+  res.set('Allow', 'GET, OPTIONS').status(204).send();
+});
+
 router.options('/eco/:ecoCode', (req, res) => {
   res.set('Allow', 'GET, OPTIONS').status(204).send();
 });
@@ -38,6 +50,9 @@ router.get('/popular', openingController.getPopularOpenings);
 router.get('/trending', openingController.getTrendingOpenings);
 router.get('/search', openingController.searchOpenings);
 router.get('/win-rates', openingController.getOpeningWinRates);
+router.get('/aggressive', openingController.getAggressiveOpenings);
+router.get('/defensive', openingController.getDefensiveOpenings);
+router.get('/gambits', openingController.getGambitOpenings);
 router.get('/eco/:ecoCode', openingController.getOpeningByEco);
 router.get('/', openingController.getAllOpenings);
 

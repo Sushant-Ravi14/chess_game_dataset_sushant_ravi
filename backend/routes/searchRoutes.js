@@ -27,11 +27,26 @@ router.options('/fuzzy', (req, res) => {
   res.set('Allow', 'GET, OPTIONS').status(204).send();
 });
 
+router.options('/autocomplete', (req, res) => {
+  res.set('Allow', 'GET, OPTIONS').status(204).send();
+});
+
+router.options('/recent', (req, res) => {
+  res.set('Allow', 'GET, OPTIONS').status(204).send();
+});
+
+router.options('/popular', (req, res) => {
+  res.set('Allow', 'GET, OPTIONS').status(204).send();
+});
+
 router.get('/matches', searchController.searchMatches);
 router.get('/players', searchController.searchPlayers);
 router.get('/openings', searchController.searchOpenings);
 router.get('/eco', searchController.searchByEco);
 router.get('/moves', searchController.searchMoveSequence);
 router.get('/fuzzy', searchController.fuzzySearch);
+router.get('/autocomplete', searchController.autocomplete);
+router.get('/recent', searchController.getRecentSearches);
+router.get('/popular', searchController.getPopularSearches);
 
 module.exports = router;

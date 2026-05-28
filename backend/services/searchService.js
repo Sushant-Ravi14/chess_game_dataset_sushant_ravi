@@ -151,11 +151,58 @@ const fuzzySearch = async (q) => {
   return await Match.find(filter).limit(10);
 };
 
+const autocomplete = async (q) => {
+  if (!q || q.trim() === '') return [];
+  const regex = new RegExp(`^${q}`, 'i');
+
+  const users = await Match.aggregate([
+    {
+      $match: {
+        isDeleted: { $ne: true },
+        $or: [{ white_id: regex }, { black_id: regex }]
+      }
+    },
+    { $project: { players: ["$white_id", "$black_id"] } },
+    { $unwind: "$players" },
+    { $match: { players: regex } },
+    { $group: { _id: "$players" } },
+    { $limit: 4 }
+  ]);
+
+  const openings = await Match.aggregate([
+    { $match: { isDeleted: { $ne: true }, opening_name: regex } },
+    { $group: { _id: "$opening_name" } },
+    { $limit: 4 }
+  ]);
+
+  const suggestions = [
+    ...users.map(u => ({ type: 'player', text: u._id })),
+    ...openings.map(o => ({ type: 'opening', text: o._id }))
+  ].slice(0, 8);
+
+  return suggestions;
+};
+
+const getRecentSearches = async () => {
+  return recentSearches;
+};
+
+const getPopularSearches = async () => {
+  const sorted = [...popularSearchesMap.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 10)
+    .map(entry => entry[0]);
+  return sorted;
+};
+
 module.exports = {
   searchMatches,
   searchPlayers,
   searchOpenings,
   searchByEco,
   searchMoveSequence,
-  fuzzySearch
+  fuzzySearch,
+  autocomplete,
+  getRecentSearches,
+  getPopularSearches
 };

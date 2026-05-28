@@ -106,6 +106,18 @@ router.options('/infinite', (req, res) => {
   res.set('Allow', 'GET, OPTIONS').status(204).send();
 });
 
+router.options('/sort/shortest', (req, res) => {
+  res.set('Allow', 'GET, OPTIONS').status(204).send();
+});
+
+router.options('/sort/longest', (req, res) => {
+  res.set('Allow', 'GET, OPTIONS').status(204).send();
+});
+
+router.options('/sort/highest-rated', (req, res) => {
+  res.set('Allow', 'GET, OPTIONS').status(204).send();
+});
+
 router.head('/', asyncHandler(async (req, res) => {
   const count = await Match.countDocuments({ isDeleted: { $ne: true } });
   res.set('X-Total-Count', count).status(200).send();
@@ -131,6 +143,9 @@ router.get('/filter/low-rated', matchController.getLowRatedMatches);
 router.get('/filter/long-games', matchController.getLongGamesMatches);
 router.get('/scroll', matchController.getScrollMatches);
 router.get('/infinite', matchController.getInfiniteMatches);
+router.get('/sort/shortest', matchController.getShortestMatches);
+router.get('/sort/longest', matchController.getLongestMatches);
+router.get('/sort/highest-rated', matchController.getHighestRatedMatches);
 router.get('/', matchController.getAllMatches);
 router.post('/', validateCreateMatch, matchController.createMatch);
 router.get('/:matchId/moves', matchController.getMatchMoves);

@@ -55,9 +55,25 @@ const updateMatch = async (id, data) => {
   await match.save();
   return match;
 };
+
+const deleteMatch = async (id) => {
+  const match = await getMatchById(id);
+  match.isDeleted = true;
+  match.isDeletedAt = new Date();
+  await match.save();
+  return { id: match.id, isDeleted: true };
+};
+
+const getMatchMoves = async (id) => {
+  const match = await getMatchById(id);
+  return { moves: match.moves.split(' ') };
+};
+
 module.exports = {
   getAllMatches,
   getMatchById,
   createMatch,
   updateMatch,
+  deleteMatch,
+  getMatchMoves,
 };

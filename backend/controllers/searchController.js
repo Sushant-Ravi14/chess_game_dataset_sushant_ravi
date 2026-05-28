@@ -56,11 +56,30 @@ const fuzzySearch = asyncHandler(async (req, res) => {
   sendSuccess(res, 200, 'Fuzzy search completed successfully', matches);
 });
 
+const autocomplete = asyncHandler(async (req, res) => {
+  const { q } = req.query;
+  const suggestions = await searchService.autocomplete(q);
+  sendSuccess(res, 200, 'Autocomplete suggestions retrieved successfully', suggestions);
+});
+
+const getRecentSearches = asyncHandler(async (req, res) => {
+  const recent = await searchService.getRecentSearches();
+  sendSuccess(res, 200, 'Recent searches retrieved successfully', recent);
+});
+
+const getPopularSearches = asyncHandler(async (req, res) => {
+  const popular = await searchService.getPopularSearches();
+  sendSuccess(res, 200, 'Popular searches retrieved successfully', popular);
+});
+
 module.exports = {
   searchMatches,
   searchPlayers,
   searchOpenings,
   searchByEco,
   searchMoveSequence,
-  fuzzySearch
+  fuzzySearch,
+  autocomplete,
+  getRecentSearches,
+  getPopularSearches
 };

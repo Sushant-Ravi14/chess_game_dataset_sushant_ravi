@@ -32,6 +32,16 @@ const getMatchMoves = asyncHandler(async (req, res) => {
   sendSuccess(res, 200, 'Match moves retrieved successfully', moves);
 });
 
+const getMatchPGN = asyncHandler(async (req, res) => {
+  const pgn = await matchService.getMatchPGN(req.params.matchId);
+  sendSuccess(res, 200, 'Match PGN retrieved successfully', pgn);
+});
+
+const getMatchFEN = asyncHandler(async (req, res) => {
+  const fen = await matchService.getMatchFEN(req.params.matchId);
+  sendSuccess(res, 200, 'Match FEN retrieved successfully', fen);
+});
+
 module.exports = {
   getAllMatches,
   getMatchById,
@@ -39,4 +49,6 @@ module.exports = {
   updateMatch,
   deleteMatch,
   getMatchMoves,
+  getMatchPGN,
+  getMatchFEN,
 };

@@ -18,6 +18,14 @@ router.options('/:matchId/moves', (req, res) => {
   res.set('Allow', 'GET, OPTIONS').status(204).send();
 });
 
+router.options('/:matchId/pgn', (req, res) => {
+  res.set('Allow', 'GET, OPTIONS').status(204).send();
+});
+
+router.options('/:matchId/fen', (req, res) => {
+  res.set('Allow', 'GET, OPTIONS').status(204).send();
+});
+
 router.head('/', asyncHandler(async (req, res) => {
   const count = await Match.countDocuments({ isDeleted: { $ne: true } });
   res.set('X-Total-Count', count).status(200).send();
@@ -26,6 +34,8 @@ router.head('/', asyncHandler(async (req, res) => {
 router.get('/', matchController.getAllMatches);
 router.post('/', validateCreateMatch, matchController.createMatch);
 router.get('/:matchId/moves', matchController.getMatchMoves);
+router.get('/:matchId/pgn', matchController.getMatchPGN);
+router.get('/:matchId/fen', matchController.getMatchFEN);
 router.get('/:matchId', matchController.getMatchById);
 router.put('/:matchId', validateCreateMatch, matchController.updateMatch);
 router.patch('/:matchId', validateUpdateMatch, matchController.updateMatch);

@@ -289,6 +289,59 @@ const searchByDateRange = async (from, to, query) => {
   return { data: matches, meta };
 };
 
+const searchOpeningFamily = async (family, query) => {
+  const regex = new RegExp(family, 'i');
+  const filter = {
+    isDeleted: { $ne: true },
+    opening_name: regex
+  };
+
+  const totalCount = await Match.countDocuments(filter);
+  const meta = paginate(query, totalCount);
+
+  const matches = await Match.find(filter)
+    .skip(meta.skip)
+    .limit(meta.limit);
+
+  return { data: matches, meta };
+};
+
+const searchCheckmatePatterns = async (q, query) => {
+  const regex = new RegExp(q, 'i');
+  const filter = {
+    isDeleted: { $ne: true },
+    victory_status: 'mate',
+    opening_name: regex
+  };
+
+  const totalCount = await Match.countDocuments(filter);
+  const meta = paginate(query, totalCount);
+
+  const matches = await Match.find(filter)
+    .skip(meta.skip)
+    .limit(meta.limit);
+
+  return { data: matches, meta };
+};
+
+const searchEndgames = async (q, query) => {
+  const regex = new RegExp(q, 'i');
+  const filter = {
+    isDeleted: { $ne: true },
+    opening_name: regex,
+    $expr: { $gte: [{ $toInt: "$turns" }, 60] }
+  };
+
+  const totalCount = await Match.countDocuments(filter);
+  const meta = paginate(query, totalCount);
+
+  const matches = await Match.find(filter)
+    .skip(meta.skip)
+    .limit(meta.limit);
+
+  return { data: matches, meta };
+};
+
 module.exports = {
   searchMatches,
   searchPlayers,
@@ -301,5 +354,8 @@ module.exports = {
   getPopularSearches,
   advancedSearch,
   searchByRating,
-  searchByDateRange
+  searchByDateRange,
+  searchOpeningFamily,
+  searchCheckmatePatterns,
+  searchEndgames
 };

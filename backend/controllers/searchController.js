@@ -95,6 +95,33 @@ const searchByDateRange = asyncHandler(async (req, res) => {
   sendSuccess(res, 200, 'Date range search completed successfully', data, meta);
 });
 
+const searchOpeningFamily = asyncHandler(async (req, res) => {
+  const queryTerm = req.query.q || req.query.family;
+  if (!queryTerm) {
+    throw Object.assign(new Error('Family query q is required'), { statusCode: 400 });
+  }
+  const { data, meta } = await searchService.searchOpeningFamily(queryTerm, req.query);
+  sendSuccess(res, 200, 'Opening family search completed successfully', data, meta);
+});
+
+const searchCheckmatePatterns = asyncHandler(async (req, res) => {
+  const { q } = req.query;
+  if (!q) {
+    throw Object.assign(new Error('Checkmate pattern query q is required'), { statusCode: 400 });
+  }
+  const { data, meta } = await searchService.searchCheckmatePatterns(q, req.query);
+  sendSuccess(res, 200, 'Checkmate pattern search completed successfully', data, meta);
+});
+
+const searchEndgames = asyncHandler(async (req, res) => {
+  const { q } = req.query;
+  if (!q) {
+    throw Object.assign(new Error('Endgame query q is required'), { statusCode: 400 });
+  }
+  const { data, meta } = await searchService.searchEndgames(q, req.query);
+  sendSuccess(res, 200, 'Endgame search completed successfully', data, meta);
+});
+
 module.exports = {
   searchMatches,
   searchPlayers,
@@ -107,5 +134,8 @@ module.exports = {
   getPopularSearches,
   advancedSearch,
   searchByRating,
-  searchByDateRange
+  searchByDateRange,
+  searchOpeningFamily,
+  searchCheckmatePatterns,
+  searchEndgames
 };

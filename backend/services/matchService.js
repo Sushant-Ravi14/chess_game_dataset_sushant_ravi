@@ -163,6 +163,54 @@ const restoreMatch = async (id) => {
   return match;
 };
 
+const getRatedMatches = async (query) => {
+  const filter = buildFilter(query);
+  filter.rated = { $in: ['TRUE', 'True'] };
+  const sort = buildSort(query.sort);
+  
+  const totalCount = await Match.countDocuments(filter);
+  const meta = paginate(query, totalCount);
+
+  const matches = await Match.find(filter)
+    .sort(sort)
+    .skip(meta.skip)
+    .limit(meta.limit);
+
+  return { data: matches, meta };
+};
+
+const getUnratedMatches = async (query) => {
+  const filter = buildFilter(query);
+  filter.rated = { $in: ['FALSE', 'False'] };
+  const sort = buildSort(query.sort);
+  
+  const totalCount = await Match.countDocuments(filter);
+  const meta = paginate(query, totalCount);
+
+  const matches = await Match.find(filter)
+    .sort(sort)
+    .skip(meta.skip)
+    .limit(meta.limit);
+
+  return { data: matches, meta };
+};
+
+const getWhiteWinsMatches = async (query) => {
+  const filter = buildFilter(query);
+  filter.winner = 'white';
+  const sort = buildSort(query.sort);
+  
+  const totalCount = await Match.countDocuments(filter);
+  const meta = paginate(query, totalCount);
+
+  const matches = await Match.find(filter)
+    .sort(sort)
+    .skip(meta.skip)
+    .limit(meta.limit);
+
+  return { data: matches, meta };
+};
+
 module.exports = {
   getAllMatches,
   getMatchById,
@@ -178,4 +226,7 @@ module.exports = {
   getRandomMatch,
   archiveMatch,
   restoreMatch,
+  getRatedMatches,
+  getUnratedMatches,
+  getWhiteWinsMatches
 };

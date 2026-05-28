@@ -53,6 +53,31 @@ const getDrawRate = asyncHandler(async (req, res) => {
   sendSuccess(res, 200, 'Draw percentage retrieved successfully', { drawRate });
 });
 
+const getRatedGamesCount = asyncHandler(async (req, res) => {
+  const count = await statsService.getRatedGamesCount();
+  sendSuccess(res, 200, 'Rated games count retrieved successfully', { count });
+});
+
+const getUnratedGamesCount = asyncHandler(async (req, res) => {
+  const count = await statsService.getUnratedGamesCount();
+  sendSuccess(res, 200, 'Unrated games count retrieved successfully', { count });
+});
+
+const getDailyGamesStats = asyncHandler(async (req, res) => {
+  const stats = await statsService.getDailyGamesStats();
+  sendSuccess(res, 200, 'Daily game counts retrieved successfully', stats);
+});
+
+const getMonthlyGamesStats = asyncHandler(async (req, res) => {
+  const stats = await statsService.getMonthlyGamesStats();
+  sendSuccess(res, 200, 'Monthly game counts retrieved successfully', stats);
+});
+
+const getYearlyGamesStats = asyncHandler(async (req, res) => {
+  const stats = await statsService.getYearlyGamesStats();
+  sendSuccess(res, 200, 'Yearly game counts retrieved successfully', stats);
+});
+
 module.exports = {
   getTotalMatches,
   getTotalPlayers,
@@ -63,5 +88,10 @@ module.exports = {
   getTimeoutRate,
   getWhiteWinRate,
   getBlackWinRate,
-  getDrawRate
+  getDrawRate,
+  getRatedGamesCount,
+  getUnratedGamesCount,
+  getDailyGamesStats,
+  getMonthlyGamesStats,
+  getYearlyGamesStats
 };

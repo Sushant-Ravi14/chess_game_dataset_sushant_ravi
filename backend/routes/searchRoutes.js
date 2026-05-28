@@ -51,6 +51,18 @@ router.options('/date-range', (req, res) => {
   res.set('Allow', 'GET, OPTIONS').status(204).send();
 });
 
+router.options('/opening-family', (req, res) => {
+  res.set('Allow', 'GET, OPTIONS').status(204).send();
+});
+
+router.options('/checkmate-patterns', (req, res) => {
+  res.set('Allow', 'GET, OPTIONS').status(204).send();
+});
+
+router.options('/endgames', (req, res) => {
+  res.set('Allow', 'GET, OPTIONS').status(204).send();
+});
+
 router.get('/matches', searchController.searchMatches);
 router.get('/players', searchController.searchPlayers);
 router.get('/openings', searchController.searchOpenings);
@@ -63,5 +75,8 @@ router.get('/popular', searchController.getPopularSearches);
 router.get('/advanced', searchController.advancedSearch);
 router.get('/player-rating', searchController.searchByRating);
 router.get('/date-range', searchController.searchByDateRange);
+router.get('/opening-family', searchController.searchOpeningFamily);
+router.get('/checkmate-patterns', searchController.searchCheckmatePatterns);
+router.get('/endgames', searchController.searchEndgames);
 
 module.exports = router;

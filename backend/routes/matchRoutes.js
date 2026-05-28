@@ -30,6 +30,14 @@ router.options('/:matchId/analysis', (req, res) => {
   res.set('Allow', 'GET, OPTIONS').status(204).send();
 });
 
+router.options('/:matchId/archive', (req, res) => {
+  res.set('Allow', 'PATCH, OPTIONS').status(204).send();
+});
+
+router.options('/:matchId/restore', (req, res) => {
+  res.set('Allow', 'PATCH, OPTIONS').status(204).send();
+});
+
 router.head('/', asyncHandler(async (req, res) => {
   const count = await Match.countDocuments({ isDeleted: { $ne: true } });
   res.set('X-Total-Count', count).status(200).send();
@@ -37,12 +45,15 @@ router.head('/', asyncHandler(async (req, res) => {
 
 router.get('/latest', matchController.getLatestMatches);
 router.get('/trending', matchController.getTrendingMatches);
+router.get('/random', matchController.getRandomMatch);
 router.get('/', matchController.getAllMatches);
 router.post('/', validateCreateMatch, matchController.createMatch);
 router.get('/:matchId/moves', matchController.getMatchMoves);
 router.get('/:matchId/pgn', matchController.getMatchPGN);
 router.get('/:matchId/fen', matchController.getMatchFEN);
 router.get('/:matchId/analysis', matchController.getMatchAnalysis);
+router.patch('/:matchId/archive', matchController.archiveMatch); 
+router.patch('/:matchId/restore', matchController.restoreMatch); 
 router.get('/:matchId', matchController.getMatchById);
 router.put('/:matchId', validateCreateMatch, matchController.updateMatch);
 router.patch('/:matchId', validateUpdateMatch, matchController.updateMatch);

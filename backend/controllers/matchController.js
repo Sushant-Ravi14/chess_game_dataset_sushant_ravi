@@ -57,6 +57,21 @@ const getTrendingMatches = asyncHandler(async (req, res) => {
   sendSuccess(res, 200, 'Trending matches retrieved successfully', data, meta);
 });
 
+const getRandomMatch = asyncHandler(async (req, res) => {
+  const match = await matchService.getRandomMatch();
+  sendSuccess(res, 200, 'Random match retrieved successfully', match);
+});
+
+const archiveMatch = asyncHandler(async (req, res) => {
+  const match = await matchService.archiveMatch(req.params.matchId);
+  sendSuccess(res, 200, 'Match archived successfully', match);
+});
+
+const restoreMatch = asyncHandler(async (req, res) => {
+  const match = await matchService.restoreMatch(req.params.matchId);
+  sendSuccess(res, 200, 'Match restored successfully', match);
+});
+
 module.exports = {
   getAllMatches,
   getMatchById,
@@ -69,5 +84,7 @@ module.exports = {
   getMatchAnalysis,
   getLatestMatches,
   getTrendingMatches,
+  getRandomMatch, 
+  archiveMatch, 
+  restoreMatch, 
 };
-

@@ -17,8 +17,14 @@ const createMatch = asyncHandler(async (req, res) => {
   sendSuccess(res, 201, 'Match created successfully', match);
 });
 
+const updateMatch = asyncHandler(async (req, res) => {
+  const match = await matchService.updateMatch(req.params.matchId, req.body);
+  sendSuccess(res, 200, 'Match updated successfully', match);
+});
+
 module.exports = {
   getAllMatches,
   getMatchById,
   createMatch,
+  updateMatch,
 };

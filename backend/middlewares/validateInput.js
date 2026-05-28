@@ -21,6 +21,14 @@ const validateCreateMatch = (req, res, next) => {
   next();
 };
 
+const validateUpdateMatch = (req, res, next) => {
+  if (!req.body || Object.keys(req.body).length === 0) {
+    return sendError(res, 400, 'At least one field must be present to update a match');
+  }
+  next();
+};
+
 module.exports = {
   validateCreateMatch,
+  validateUpdateMatch,
 };

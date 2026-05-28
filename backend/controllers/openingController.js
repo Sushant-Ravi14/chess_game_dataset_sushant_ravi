@@ -66,6 +66,22 @@ const getWhiteAdvantageOpenings = asyncHandler(async (req, res) => {
   sendSuccess(res, 200, 'White advantage openings retrieved successfully', openings);
 });
 
+const getBlackAdvantageOpenings = asyncHandler(async (req, res) => {
+  const openings = await openingService.getBlackAdvantageOpenings();
+  sendSuccess(res, 200, 'Black advantage openings retrieved successfully', openings);
+});
+
+const getBeginnerFriendlyOpenings = asyncHandler(async (req, res) => {
+  const openings = await openingService.getBeginnerFriendlyOpenings();
+  sendSuccess(res, 200, 'Beginner friendly openings retrieved successfully', openings);
+});
+
+const getOpeningsByComplexity = asyncHandler(async (req, res) => {
+  const level = req.query.level || req.params.level || 'Beginner';
+  const openings = await openingService.getOpeningsByComplexity(level);
+  sendSuccess(res, 200, 'Openings matching complexity level retrieved successfully', openings);
+});
+
 module.exports = {
   getAllOpenings,
   getPopularOpenings,
@@ -78,5 +94,8 @@ module.exports = {
   getGambitOpenings,
   getFastestCheckmates,
   getRareOpenings,
-  getWhiteAdvantageOpenings
+  getWhiteAdvantageOpenings,
+  getBlackAdvantageOpenings,
+  getBeginnerFriendlyOpenings,
+  getOpeningsByComplexity
 };

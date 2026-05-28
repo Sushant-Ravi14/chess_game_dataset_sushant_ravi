@@ -49,6 +49,18 @@ router.options('/white-advantage', (req, res) => {
   res.set('Allow', 'GET, OPTIONS').status(204).send();
 });
 
+router.options('/black-advantage', (req, res) => {
+  res.set('Allow', 'GET, OPTIONS').status(204).send();
+});
+
+router.options('/beginner-friendly', (req, res) => {
+  res.set('Allow', 'GET, OPTIONS').status(204).send();
+});
+
+router.options('/complexity', (req, res) => {
+  res.set('Allow', 'GET, OPTIONS').status(204).send();
+});
+
 router.options('/eco/:ecoCode', (req, res) => {
   res.set('Allow', 'GET, OPTIONS').status(204).send();
 });
@@ -68,6 +80,9 @@ router.get('/gambits', openingController.getGambitOpenings);
 router.get('/checkmates', openingController.getFastestCheckmates);
 router.get('/rare', openingController.getRareOpenings);
 router.get('/white-advantage', openingController.getWhiteAdvantageOpenings);
+router.get('/black-advantage', openingController.getBlackAdvantageOpenings);
+router.get('/beginner-friendly', openingController.getBeginnerFriendlyOpenings);
+router.get('/complexity', openingController.getOpeningsByComplexity);
 router.get('/eco/:ecoCode', openingController.getOpeningByEco);
 router.get('/', openingController.getAllOpenings);
 

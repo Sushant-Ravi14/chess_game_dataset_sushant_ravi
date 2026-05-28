@@ -102,6 +102,21 @@ const getCheckmatesMatches = asyncHandler(async (req, res) => {
   sendSuccess(res, 200, 'Checkmate matches retrieved successfully', data, meta);
 });
 
+const getResignationsMatches = asyncHandler(async (req, res) => {
+  const { data, meta } = await matchService.getResignationsMatches(req.query);
+  sendSuccess(res, 200, 'Resignation matches retrieved successfully', data, meta);
+});
+
+const getTimeoutsMatches = asyncHandler(async (req, res) => {
+  const { data, meta } = await matchService.getTimeoutsMatches(req.query);
+  sendSuccess(res, 200, 'Timeout matches retrieved successfully', data, meta);
+});
+
+const getRapidMatches = asyncHandler(async (req, res) => {
+  const { data, meta } = await matchService.getRapidMatches(req.query);
+  sendSuccess(res, 200, 'Rapid matches retrieved successfully', data, meta);
+});
+
 module.exports = {
   getAllMatches,
   getMatchById,
@@ -122,5 +137,8 @@ module.exports = {
   getWhiteWinsMatches,
   getBlackWinsMatches,
   getDrawsMatches,
-  getCheckmatesMatches
+  getCheckmatesMatches,
+  getResignationsMatches,
+  getTimeoutsMatches,
+  getRapidMatches
 };

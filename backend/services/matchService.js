@@ -259,6 +259,93 @@ const getCheckmatesMatches = async (query) => {
   return { data: matches, meta };
 };
 
+const getResignationsMatches = async (query) => {
+  const filter = buildFilter(query);
+  filter.victory_status = 'resign';
+  const sort = buildSort(query.sort);
+  
+  const totalCount = await Match.countDocuments(filter);
+  const meta = paginate(query, totalCount);
+
+  const matches = await Match.find(filter)
+    .sort(sort)
+    .skip(meta.skip)
+    .limit(meta.limit);
+
+  return { data: matches, meta };
+};
+
+const getTimeoutsMatches = async (query) => {
+  const filter = buildFilter(query);
+  filter.victory_status = 'outoftime';
+  const sort = buildSort(query.sort);
+  
+  const totalCount = await Match.countDocuments(filter);
+  const meta = paginate(query, totalCount);
+
+  const matches = await Match.find(filter)
+    .sort(sort)
+    .skip(meta.skip)
+    .limit(meta.limit);
+
+  return { data: matches, meta };
+};
+
+const getRapidMatches = async (query) => {
+  const filter = buildFilter(query);
+  
+  const rapidExpr = {
+    $let: {
+      vars: {
+        parts: { $split: ["$increment_code", "+"] }
+      },
+      in: {
+        $let: {
+          vars: {
+            base: { $toDouble: { $arrayElemAt: ["$$parts", 0] } },
+            inc: { $toDouble: { $arrayElemAt: ["$$parts", 1] } }
+          },
+          in: {
+            $let: {
+              vars: {
+                totalSec: { $add: [{ $multiply: ["$$base", 60] }, { $multiply: ["$$inc", 40] }] }
+              },
+              in: {
+                $and: [
+                  { $gte: ["$$totalSec", 480] },
+                  { $lt: ["$$totalSec", 1500] }
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  };
+
+  if (filter.$expr) {
+    if (filter.$expr.$and) {
+      filter.$expr.$and.push(rapidExpr);
+    } else {
+      filter.$expr = { $and: [filter.$expr, rapidExpr] };
+    }
+  } else {
+    filter.$expr = rapidExpr;
+  }
+  
+  const sort = buildSort(query.sort);
+  
+  const totalCount = await Match.countDocuments(filter);
+  const meta = paginate(query, totalCount);
+
+  const matches = await Match.find(filter)
+    .sort(sort)
+    .skip(meta.skip)
+    .limit(meta.limit);
+
+  return { data: matches, meta };
+};
+
 module.exports = {
   getAllMatches,
   getMatchById,
@@ -279,5 +366,8 @@ module.exports = {
   getWhiteWinsMatches,
   getBlackWinsMatches,
   getDrawsMatches,
-  getCheckmatesMatches
+  getCheckmatesMatches,
+  getResignationsMatches,
+  getTimeoutsMatches,
+  getRapidMatches
 };

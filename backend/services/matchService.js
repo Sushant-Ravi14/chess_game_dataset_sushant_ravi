@@ -44,8 +44,20 @@ const createMatch = async (data) => {
   return match;
 };
 
+const updateMatch = async (id, data) => {
+  const match = await getMatchById(id);
+  
+  Object.keys(data).forEach((key) => {
+    if (data[key] !== undefined) {
+      match[key] = data[key];
+    }
+  });
+  await match.save();
+  return match;
+};
 module.exports = {
   getAllMatches,
   getMatchById,
   createMatch,
+  updateMatch,
 };

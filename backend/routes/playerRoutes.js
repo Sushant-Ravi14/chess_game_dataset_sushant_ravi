@@ -5,7 +5,6 @@ const asyncHandler = require('../utils/asyncHandler');
 
 const router = express.Router();
 
-// OPTIONS - allowed methods
 router.options('/', (req, res) => {
   res.set('Allow', 'GET, OPTIONS').status(204).send();
 });
@@ -18,7 +17,18 @@ router.options('/:username/history', (req, res) => {
   res.set('Allow', 'GET, OPTIONS').status(204).send();
 });
 
-// HEAD - returns distinct players count
+router.options('/:username/stats', (req, res) => {
+  res.set('Allow', 'GET, OPTIONS').status(204).send();
+});
+
+router.options('/:username/openings', (req, res) => {
+  res.set('Allow', 'GET, OPTIONS').status(204).send();
+});
+
+router.options('/:username/rating-history', (req, res) => {
+  res.set('Allow', 'GET, OPTIONS').status(204).send();
+});
+
 router.head('/', asyncHandler(async (req, res) => {
   const whitePlayers = await Match.distinct('white_id', { isDeleted: { $ne: true } });
   const blackPlayers = await Match.distinct('black_id', { isDeleted: { $ne: true } });
@@ -26,9 +36,11 @@ router.head('/', asyncHandler(async (req, res) => {
   res.set('X-Total-Players-Count', uniquePlayers.size).status(200).send();
 }));
 
-// Route mappings (Parametric routes at the end)
 router.get('/', playerController.getAllPlayers);
-router.get('/:username', playerController.getPlayerByUsername);
 router.get('/:username/history', playerController.getPlayerHistory);
+router.get('/:username/stats', playerController.getPlayerStats);
+router.get('/:username/openings', playerController.getPlayerOpenings);
+router.get('/:username/rating-history', playerController.getPlayerRatingHistory);
+router.get('/:username', playerController.getPlayerByUsername);
 
 module.exports = router;

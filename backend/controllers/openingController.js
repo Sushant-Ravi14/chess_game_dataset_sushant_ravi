@@ -17,8 +17,30 @@ const getTrendingOpenings = asyncHandler(async (req, res) => {
   sendSuccess(res, 200, 'Trending openings retrieved successfully', openings);
 });
 
+const getOpeningByEco = asyncHandler(async (req, res) => {
+  const opening = await openingService.getOpeningByEco(req.params.ecoCode);
+  sendSuccess(res, 200, 'Opening retrieved successfully', opening);
+});
+
+const searchOpenings = asyncHandler(async (req, res) => {
+  const { q } = req.query;
+  if (!q) {
+    throw Object.assign(new Error('Search query parameter q is required'), { statusCode: 400 });
+  }
+  const openings = await openingService.searchOpenings(q);
+  sendSuccess(res, 200, 'Openings search results retrieved successfully', openings);
+});
+
+const getOpeningWinRates = asyncHandler(async (req, res) => {
+  const winRates = await openingService.getOpeningWinRates();
+  sendSuccess(res, 200, 'Opening win rates retrieved successfully', winRates);
+});
+
 module.exports = {
   getAllOpenings,
   getPopularOpenings,
-  getTrendingOpenings
+  getTrendingOpenings,
+  getOpeningByEco,
+  searchOpenings,
+  getOpeningWinRates
 };

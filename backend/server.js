@@ -14,6 +14,7 @@ const statsRoutes = require('./routes/statsRoutes');
 const authRoutes = require('./routes/authRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const middlewareRoutes = require('./routes/middlewareRoutes');
+const protectedRoutes = require('./routes/protectedRoutes');
 const { sendError } = require('./utils/apiResponse');
 
 const app = express();
@@ -51,6 +52,7 @@ app.use('/api/v1/stats', statsRoutes);
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/admin', adminRoutes);
 app.use('/api/v1/middleware', middlewareRoutes);
+app.use('/api/v1/protected', protectedRoutes);
 
 app.use((req, res, next) => {
   res.status(404);

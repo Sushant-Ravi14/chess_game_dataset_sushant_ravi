@@ -154,8 +154,79 @@ const getPlayerHistory = async (username, query) => {
   return { data: matches, meta };
 };
 
+const getPlayerStats = async (username) => {
+  const player = await getPlayerByUsername(username);
+  return {
+    username: player.username,
+    totalGames: player.totalGames,
+    wins: player.wins,
+    losses: player.losses,
+    draws: player.draws,
+    winRate: player.winRate
+  };
+};
+
+const getPlayerOpenings = async (username) => {
+  const openings = await Match.aggregate([
+    {
+      $match: {
+        isDeleted: { $ne: true },
+        $or: [{ white_id: username }, { black_id: username }]
+      }
+    },
+    {
+      $project: {
+        opening_eco: 1,
+        opening_name: 1,
+        isWhite: { $eq: ["$white_id", username] },
+        winner: 1
+      }
+    },
+    {
+      $group: {
+        _id: { eco: "$opening_eco", name: "$opening_name" },
+        count: { $sum: 1 },
+        wins: {
+          $sum: {
+            $cond: [
+              {
+                $or: [
+                  { $and: [{ $eq: ["$winner", "white"] }, { $eq: ["$isWhite", true] }] },
+                  { $and: [{ $eq: ["$winner", "black"] }, { $eq: ["$isWhite", false] }] }
+                ]
+              },
+              1, 0
+            ]
+          }
+        }
+      }
+    },
+    {
+      $project: {
+        eco: "$_id.eco",
+        name: "$_id.name",
+        count: 1,
+        wins: 1,
+        winRate: { $multiply: [{ $divide: ["$wins", "$count"] }, 100] },
+        _id: 0
+      }
+    },
+    { $sort: { count: -1 } }
+  ]);
+
+  return openings;
+};
+
+const getPlayerRatingHistory = async (username) => {
+  const player = await getPlayerByUsername(username);
+  return player.ratingHistory;
+};
+
 module.exports = {
   getAllPlayers,
   getPlayerByUsername,
   getPlayerHistory,
+  getPlayerStats,
+  getPlayerOpenings,
+  getPlayerRatingHistory,
 };

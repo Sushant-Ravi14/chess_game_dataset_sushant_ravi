@@ -17,8 +17,27 @@ const getPlayerHistory = asyncHandler(async (req, res) => {
   sendSuccess(res, 200, 'Player match history retrieved successfully', data, meta);
 });
 
+const getPlayerStats = asyncHandler(async (req, res) => {
+  const stats = await playerService.getPlayerStats(req.params.username);
+  sendSuccess(res, 200, 'Player statistics retrieved successfully', stats);
+});
+
+const getPlayerOpenings = asyncHandler(async (req, res) => {
+  const openings = await playerService.getPlayerOpenings(req.params.username);
+  sendSuccess(res, 200, 'Player opening preferences retrieved successfully', openings);
+});
+
+const getPlayerRatingHistory = asyncHandler(async (req, res) => {
+  const history = await playerService.getPlayerRatingHistory(req.params.username);
+  sendSuccess(res, 200, 'Player rating history retrieved successfully', history);
+});
+
 module.exports = {
   getAllPlayers,
   getPlayerByUsername,
   getPlayerHistory,
+  getPlayerStats,
+  getPlayerOpenings,
+  getPlayerRatingHistory,
 };
+

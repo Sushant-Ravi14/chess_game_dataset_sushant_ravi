@@ -97,8 +97,65 @@ const searchOpenings = async (q, query) => {
   return { data: paginatedOpenings, meta };
 };
 
+const searchByEco = async (q) => {
+  trackSearch(q);
+  const regex = new RegExp(`^${q}`, 'i');
+
+  return await Match.aggregate([
+    { $match: { isDeleted: { $ne: true }, opening_eco: regex } },
+    {
+      $group: {
+        _id: "$opening_eco",
+        eco: { $first: "$opening_eco" },
+        name: { $first: "$opening_name" },
+        totalGames: { $sum: 1 }
+      }
+    },
+    { $project: { eco: "$_id", name: 1, totalGames: 1, _id: 0 } },
+    { $sort: { totalGames: -1 } }
+  ]);
+};
+
+const searchMoveSequence = async (moves, query) => {
+  const normalizedMoves = moves.replace(/,/g, ' ').trim();
+  trackSearch(normalizedMoves);
+  const filter = {
+    isDeleted: { $ne: true },
+    moves: { $regex: new RegExp(`^${normalizedMoves}`, 'i') }
+  };
+
+  const totalCount = await Match.countDocuments(filter);
+  const meta = paginate(query, totalCount);
+
+  const matches = await Match.find(filter)
+    .skip(meta.skip)
+    .limit(meta.limit);
+
+  return { data: matches, meta };
+};
+
+const fuzzySearch = async (q) => {
+  trackSearch(q);
+  const regex = new RegExp(q.split('').join('.*'), 'i');
+
+  const filter = {
+    isDeleted: { $ne: true },
+    $or: [
+      { opening_name: regex },
+      { white_id: regex },
+      { black_id: regex },
+      { opening_eco: regex }
+    ]
+  };
+
+  return await Match.find(filter).limit(10);
+};
+
 module.exports = {
   searchMatches,
   searchPlayers,
-  searchOpenings
+  searchOpenings,
+  searchByEco,
+  searchMoveSequence,
+  fuzzySearch
 };

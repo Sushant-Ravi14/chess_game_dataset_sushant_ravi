@@ -32,6 +32,21 @@ const getPlayerRatingHistory = asyncHandler(async (req, res) => {
   sendSuccess(res, 200, 'Player rating history retrieved successfully', history);
 });
 
+const getPlayerWinRate = asyncHandler(async (req, res) => {
+  const winRate = await playerService.getPlayerWinRate(req.params.username);
+  sendSuccess(res, 200, 'Player win rate retrieved successfully', winRate);
+});
+
+const getPlayerLossRate = asyncHandler(async (req, res) => {
+  const lossRate = await playerService.getPlayerLossRate(req.params.username);
+  sendSuccess(res, 200, 'Player loss rate retrieved successfully', lossRate);
+});
+
+const getPlayerDrawRate = asyncHandler(async (req, res) => {
+  const drawRate = await playerService.getPlayerDrawRate(req.params.username);
+  sendSuccess(res, 200, 'Player draw rate retrieved successfully', drawRate);
+});
+
 module.exports = {
   getAllPlayers,
   getPlayerByUsername,
@@ -39,5 +54,7 @@ module.exports = {
   getPlayerStats,
   getPlayerOpenings,
   getPlayerRatingHistory,
+  getPlayerWinRate,
+  getPlayerLossRate,
+  getPlayerDrawRate,
 };
-

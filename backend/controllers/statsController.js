@@ -28,10 +28,40 @@ const getCheckmateRate = asyncHandler(async (req, res) => {
   sendSuccess(res, 200, 'Checkmate percentage retrieved successfully', { checkmateRate });
 });
 
+const getResignationRate = asyncHandler(async (req, res) => {
+  const resignationRate = await statsService.getResignationRate();
+  sendSuccess(res, 200, 'Resignation percentage retrieved successfully', { resignationRate });
+});
+
+const getTimeoutRate = asyncHandler(async (req, res) => {
+  const timeoutRate = await statsService.getTimeoutRate();
+  sendSuccess(res, 200, 'Timeout percentage retrieved successfully', { timeoutRate });
+});
+
+const getWhiteWinRate = asyncHandler(async (req, res) => {
+  const whiteWinRate = await statsService.getWhiteWinRate();
+  sendSuccess(res, 200, 'White win percentage retrieved successfully', { whiteWinRate });
+});
+
+const getBlackWinRate = asyncHandler(async (req, res) => {
+  const blackWinRate = await statsService.getBlackWinRate();
+  sendSuccess(res, 200, 'Black win percentage retrieved successfully', { blackWinRate });
+});
+
+const getDrawRate = asyncHandler(async (req, res) => {
+  const drawRate = await statsService.getDrawRate();
+  sendSuccess(res, 200, 'Draw percentage retrieved successfully', { drawRate });
+});
+
 module.exports = {
   getTotalMatches,
   getTotalPlayers,
   getAverageRating,
   getTopOpenings,
-  getCheckmateRate
+  getCheckmateRate,
+  getResignationRate,
+  getTimeoutRate,
+  getWhiteWinRate,
+  getBlackWinRate,
+  getDrawRate
 };

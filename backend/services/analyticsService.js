@@ -224,6 +224,126 @@ const getLongestGames = async (limit) => {
   ]);
 };
 
+const getResignationFrequency = async () => {
+  const result = await Match.aggregate([
+    { $match: { isDeleted: { $ne: true } } },
+    {
+      $group: {
+        _id: null,
+        total: { $sum: 1 },
+        resignations: { $sum: { $cond: [{ $eq: ["$victory_status", "resign"] }, 1, 0] } }
+      }
+    },
+    {
+      $project: {
+        total: 1,
+        count: "$resignations",
+        percentage: { $multiply: [{ $divide: ["$resignations", "$total"] }, 100] },
+        _id: 0
+      }
+    }
+  ]);
+  return result[0] || { total: 0, count: 0, percentage: 0 };
+};
+
+const getTimeoutFrequency = async () => {
+  const result = await Match.aggregate([
+    { $match: { isDeleted: { $ne: true } } },
+    {
+      $group: {
+        _id: null,
+        total: { $sum: 1 },
+        timeouts: { $sum: { $cond: [{ $in: ["$victory_status", ["outoftime", "timeout"]] }, 1, 0] } }
+      }
+    },
+    {
+      $project: {
+        total: 1,
+        count: "$timeouts",
+        percentage: { $multiply: [{ $divide: ["$timeouts", "$total"] }, 100] },
+        _id: 0
+      }
+    }
+  ]);
+  return result[0] || { total: 0, count: 0, percentage: 0 };
+};
+
+const getOpeningSuccessRates = async () => {
+  return await Match.aggregate([
+    { $match: { isDeleted: { $ne: true } } },
+    {
+      $group: {
+        _id: "$opening_eco",
+        eco: { $first: "$opening_eco" },
+        name: { $first: "$opening_name" },
+        totalGames: { $sum: 1 },
+        whiteWins: { $sum: { $cond: [{ $eq: ["$winner", "white"] }, 1, 0] } },
+        blackWins: { $sum: { $cond: [{ $eq: ["$winner", "black"] }, 1, 0] } },
+        draws: { $sum: { $cond: [{ $eq: ["$winner", "draw"] }, 1, 0] } }
+      }
+    },
+    {
+      $project: {
+        eco: 1,
+        name: 1,
+        totalGames: 1,
+        whiteWinRate: { $multiply: [{ $divide: ["$whiteWins", "$totalGames"] }, 100] },
+        blackWinRate: { $multiply: [{ $divide: ["$blackWins", "$totalGames"] }, 100] },
+        drawRate: { $multiply: [{ $divide: ["$draws", "$totalGames"] }, 100] },
+        _id: 0
+      }
+    },
+    { $sort: { totalGames: -1 } },
+    { $limit: 20 }
+  ]);
+};
+
+const getPlayerGrowth = async () => {
+  return await Match.aggregate([
+    { $match: { isDeleted: { $ne: true } } },
+    {
+      $project: {
+        month: { $dateToString: { format: "%Y-%m", date: { $toDate: { $toDouble: "$created_at" } } } },
+        players: ["$white_id", "$black_id"]
+      }
+    },
+    { $unwind: "$players" },
+    {
+      $group: {
+        _id: "$month",
+        uniquePlayers: { $addToSet: "$players" }
+      }
+    },
+    {
+      $project: {
+        month: "$_id",
+        activePlayersCount: { $size: "$uniquePlayers" },
+        _id: 0
+      }
+    },
+    { $sort: { month: 1 } }
+  ]);
+};
+
+const getHourlyActivity = async () => {
+  return await Match.aggregate([
+    { $match: { isDeleted: { $ne: true } } },
+    {
+      $project: {
+        date: { $toDate: { $toDouble: "$created_at" } }
+      }
+    },
+    {
+      $group: {
+        _id: { $hour: "$date" },
+        count: { $sum: 1 }
+      }
+    },
+    { $project: { hour: "$_id", count: 1, _id: 0 } },
+    { $sort: { hour: 1 } }
+  ]);
+};
+
 const getTopGames = async (query) => {
   const page = Math.max(1, parseInt(query.page) || 1);
   const limit = Math.min(100, Math.max(1, parseInt(query.limit) || 10));
@@ -261,5 +381,10 @@ module.exports = {
   getDrawFrequency,
   getShortestGames,
   getLongestGames,
+  getResignationFrequency,
+  getTimeoutFrequency,
+  getOpeningSuccessRates,
+  getPlayerGrowth,
+  getHourlyActivity,
   getTopGames
 };

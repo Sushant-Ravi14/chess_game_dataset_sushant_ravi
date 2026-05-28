@@ -6,4 +6,10 @@ const paginate = (query, totalCount) => {
   return { page, limit, skip, totalPages, totalCount };
 };
 
-module.exports = { paginate };
+const cursorPaginate = (query) => {
+  const limit = Math.min(100, Math.max(1, parseInt(query.limit) || 10));
+  const cursor = query.cursor ? parseInt(query.cursor, 10) : 0;
+  return { limit, cursor };
+};
+
+module.exports = { paginate, cursorPaginate };

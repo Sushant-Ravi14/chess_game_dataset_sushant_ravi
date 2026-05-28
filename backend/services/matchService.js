@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const Match = require('../models/Match');
 const buildFilter = require('../utils/buildFilter');
 const buildSort = require('../utils/buildSort');
-const { paginate } = require('../utils/pagination');
+const { paginate, cursorPaginate } = require('../utils/pagination');
 
 const durationExpr = {
   $let: {
@@ -519,6 +519,53 @@ const getLongGamesMatches = async (query) => {
   return { data: matches, meta };
 };
 
+const getScrollMatches = async (query) => {
+  const { limit, cursor } = cursorPaginate(query);
+  const filter = buildFilter(query);
+  const sort = buildSort(query.sort);
+
+  const matches = await Match.find(filter)
+    .sort(sort)
+    .skip(cursor)
+    .limit(limit);
+
+  const nextCursor = matches.length === limit ? cursor + limit : null;
+
+  return {
+    data: matches,
+    meta: {
+      limit,
+      nextCursor
+    }
+  };
+};
+
+const getInfiniteMatches = async (query) => {
+  const filter = buildFilter(query);
+  const sort = buildSort(query.sort);
+
+  const totalCount = await Match.countDocuments(filter);
+  const meta = paginate(query, totalCount);
+
+  const matches = await Match.find(filter)
+    .sort(sort)
+    .skip(meta.skip)
+    .limit(meta.limit);
+
+  const hasMore = meta.page < meta.totalPages;
+
+  return {
+    data: matches,
+    meta: {
+      page: meta.page,
+      limit: meta.limit,
+      totalPages: meta.totalPages,
+      totalCount: meta.totalCount,
+      hasMore
+    }
+  };
+};
+
 module.exports = {
   getAllMatches,
   getMatchById,
@@ -548,5 +595,7 @@ module.exports = {
   getClassicalMatches,
   getHighRatedMatches,
   getLowRatedMatches,
-  getLongGamesMatches
+  getLongGamesMatches,
+  getScrollMatches,
+  getInfiniteMatches
 };

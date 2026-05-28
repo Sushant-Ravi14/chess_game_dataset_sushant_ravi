@@ -72,6 +72,29 @@ const getPopularSearches = asyncHandler(async (req, res) => {
   sendSuccess(res, 200, 'Popular searches retrieved successfully', popular);
 });
 
+const advancedSearch = asyncHandler(async (req, res) => {
+  const { data, meta } = await searchService.advancedSearch(req.query, req.query);
+  sendSuccess(res, 200, 'Advanced search completed successfully', data, meta);
+});
+
+const searchByRating = asyncHandler(async (req, res) => {
+  const { rating } = req.query;
+  if (!rating) {
+    throw Object.assign(new Error('Rating query is required'), { statusCode: 400 });
+  }
+  const { data, meta } = await searchService.searchByRating(rating, req.query);
+  sendSuccess(res, 200, 'Rating search completed successfully', data, meta);
+});
+
+const searchByDateRange = asyncHandler(async (req, res) => {
+  const { from, to } = req.query;
+  if (!from || !to) {
+    throw Object.assign(new Error('Query parameters from and to are required'), { statusCode: 400 });
+  }
+  const { data, meta } = await searchService.searchByDateRange(from, to, req.query);
+  sendSuccess(res, 200, 'Date range search completed successfully', data, meta);
+});
+
 module.exports = {
   searchMatches,
   searchPlayers,
@@ -81,5 +104,8 @@ module.exports = {
   fuzzySearch,
   autocomplete,
   getRecentSearches,
-  getPopularSearches
+  getPopularSearches,
+  advancedSearch,
+  searchByRating,
+  searchByDateRange
 };

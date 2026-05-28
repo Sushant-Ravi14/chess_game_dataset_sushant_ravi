@@ -147,6 +147,16 @@ const getLongGamesMatches = asyncHandler(async (req, res) => {
   sendSuccess(res, 200, 'Long duration games retrieved successfully', data, meta);
 });
 
+const getScrollMatches = asyncHandler(async (req, res) => {
+  const { data, meta } = await matchService.getScrollMatches(req.query);
+  sendSuccess(res, 200, 'Matches retrieved successfully via cursor scroll', data, meta);
+});
+
+const getInfiniteMatches = asyncHandler(async (req, res) => {
+  const { data, meta } = await matchService.getInfiniteMatches(req.query);
+  sendSuccess(res, 200, 'Matches retrieved successfully for infinite scroll', data, meta);
+});
+
 module.exports = {
   getAllMatches,
   getMatchById,
@@ -176,5 +186,7 @@ module.exports = {
   getClassicalMatches,
   getHighRatedMatches,
   getLowRatedMatches,
-  getLongGamesMatches
+  getLongGamesMatches,
+  getScrollMatches,
+  getInfiniteMatches
 };

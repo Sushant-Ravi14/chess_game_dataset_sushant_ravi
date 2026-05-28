@@ -69,6 +69,29 @@ const getMatchMoves = async (id) => {
   return { moves: match.moves.split(' ') };
 };
 
+const getMatchPGN = async (id) => {
+  const match = await getMatchById(id);
+  const pgn = `[Event "Online Match"]
+[Site "Chess Analytics Platform"]
+[Date "${match.created_at}"]
+[Round "?"]
+[White "${match.white_id}"]
+[Black "${match.black_id}"]
+[Result "${match.winner === 'white' ? '1-0' : match.winner === 'black' ? '0-1' : '1/2-1/2'}"]
+[WhiteElo "${match.white_rating}"]
+[BlackElo "${match.black_rating}"]
+[ECO "${match.opening_eco}"]
+
+${match.moves}`;
+
+  return { pgn };
+};
+
+const getMatchFEN = async (id) => {
+  const match = await getMatchById(id);
+  return { fen: match.final_fen || 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1' };
+};
+
 module.exports = {
   getAllMatches,
   getMatchById,
@@ -76,4 +99,6 @@ module.exports = {
   updateMatch,
   deleteMatch,
   getMatchMoves,
+  getMatchPGN,
+  getMatchFEN,
 };

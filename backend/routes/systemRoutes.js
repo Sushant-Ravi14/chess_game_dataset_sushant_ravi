@@ -12,5 +12,10 @@ router.get('/database/status', systemController.getDatabaseStatus);
 router.get('/cache/status', systemController.getCacheStatus);
 router.post('/recalculate-stats', systemController.recalculateStats);
 router.post('/reindex', systemController.reindexSearch);
+router.post('/restart', systemController.restartSystem);
+router.get('/config', systemController.getConfig);
+router.get('/security/events', systemController.getSecurityEvents);
+router.get('/performance', systemController.getPerformance);
+router.get('/storage', systemController.getStorage);
 
 module.exports = router;

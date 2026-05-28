@@ -21,6 +21,11 @@ router.get('/longest-games', analyticsController.getLongestGames);
 router.get('/rating-gap-upsets', analyticsController.getRatingGapUpsets);
 router.get('/checkmate-frequency', analyticsController.getCheckmateFrequency);
 router.get('/draw-frequency', analyticsController.getDrawFrequency);
+router.get('/resignation-frequency', analyticsController.getResignationFrequency);
+router.get('/timeouts', analyticsController.getTimeoutFrequency);
+router.get('/opening-success', analyticsController.getOpeningSuccessRates);
+router.get('/player-growth', analyticsController.getPlayerGrowth);
+router.get('/hourly-activity', analyticsController.getHourlyActivity);
 router.get('/top-games', analyticsController.getTopGames);
 
 module.exports = router;

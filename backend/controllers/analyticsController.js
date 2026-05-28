@@ -54,6 +54,31 @@ const getLongestGames = asyncHandler(async (req, res) => {
   sendSuccess(res, 200, 'Longest matches retrieved successfully', games);
 });
 
+const getResignationFrequency = asyncHandler(async (req, res) => {
+  const freq = await analyticsService.getResignationFrequency();
+  sendSuccess(res, 200, 'Resignation frequency retrieved successfully', freq);
+});
+
+const getTimeoutFrequency = asyncHandler(async (req, res) => {
+  const freq = await analyticsService.getTimeoutFrequency();
+  sendSuccess(res, 200, 'Timeout/out-of-time frequency retrieved successfully', freq);
+});
+
+const getOpeningSuccessRates = asyncHandler(async (req, res) => {
+  const rates = await analyticsService.getOpeningSuccessRates();
+  sendSuccess(res, 200, 'Opening success rates retrieved successfully', rates);
+});
+
+const getPlayerGrowth = asyncHandler(async (req, res) => {
+  const growth = await analyticsService.getPlayerGrowth();
+  sendSuccess(res, 200, 'Player registration growth over time retrieved successfully', growth);
+});
+
+const getHourlyActivity = asyncHandler(async (req, res) => {
+  const activity = await analyticsService.getHourlyActivity();
+  sendSuccess(res, 200, 'Hourly match activity retrieved successfully', activity);
+});
+
 const getTopGames = asyncHandler(async (req, res) => {
   const { data, meta } = await analyticsService.getTopGames(req.query);
   sendSuccess(res, 200, 'Top rated games retrieved successfully', data, meta);
@@ -70,5 +95,10 @@ module.exports = {
   getDrawFrequency,
   getShortestGames,
   getLongestGames,
+  getResignationFrequency,
+  getTimeoutFrequency,
+  getOpeningSuccessRates,
+  getPlayerGrowth,
+  getHourlyActivity,
   getTopGames
 };

@@ -51,6 +51,21 @@ const getGambitOpenings = asyncHandler(async (req, res) => {
   sendSuccess(res, 200, 'Gambit openings retrieved successfully', openings);
 });
 
+const getFastestCheckmates = asyncHandler(async (req, res) => {
+  const openings = await openingService.getFastestCheckmates();
+  sendSuccess(res, 200, 'Fastest checkmate openings retrieved successfully', openings);
+});
+
+const getRareOpenings = asyncHandler(async (req, res) => {
+  const openings = await openingService.getRareOpenings();
+  sendSuccess(res, 200, 'Rare openings retrieved successfully', openings);
+});
+
+const getWhiteAdvantageOpenings = asyncHandler(async (req, res) => {
+  const openings = await openingService.getWhiteAdvantageOpenings();
+  sendSuccess(res, 200, 'White advantage openings retrieved successfully', openings);
+});
+
 module.exports = {
   getAllOpenings,
   getPopularOpenings,
@@ -60,5 +75,8 @@ module.exports = {
   getOpeningWinRates,
   getAggressiveOpenings,
   getDefensiveOpenings,
-  getGambitOpenings
+  getGambitOpenings,
+  getFastestCheckmates,
+  getRareOpenings,
+  getWhiteAdvantageOpenings
 };

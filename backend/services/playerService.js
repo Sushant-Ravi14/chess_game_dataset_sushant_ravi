@@ -222,6 +222,23 @@ const getPlayerRatingHistory = async (username) => {
   return player.ratingHistory;
 };
 
+const getPlayerWinRate = async (username) => {
+  const player = await getPlayerByUsername(username);
+  return { winRate: player.winRate };
+};
+
+const getPlayerLossRate = async (username) => {
+  const player = await getPlayerByUsername(username);
+  const lossRate = player.totalGames > 0 ? (player.losses / player.totalGames) * 100 : 0;
+  return { lossRate };
+};
+
+const getPlayerDrawRate = async (username) => {
+  const player = await getPlayerByUsername(username);
+  const drawRate = player.totalGames > 0 ? (player.draws / player.totalGames) * 100 : 0;
+  return { drawRate };
+};
+
 module.exports = {
   getAllPlayers,
   getPlayerByUsername,
@@ -229,4 +246,8 @@ module.exports = {
   getPlayerStats,
   getPlayerOpenings,
   getPlayerRatingHistory,
+  getPlayerWinRate,
+  getPlayerLossRate,
+  getPlayerDrawRate,
 };
+

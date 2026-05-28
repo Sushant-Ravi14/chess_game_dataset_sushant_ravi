@@ -271,6 +271,79 @@ const restoreMatch = async (id) => {
   return match;
 };
 
+const bulkUpload = async (matchesArray) => {
+  try {
+    const result = await Match.insertMany(matchesArray, { ordered: false });
+    return result;
+  } catch (error) {
+    if (error.insertedDocs) {
+      return error.insertedDocs;
+    }
+    throw error;
+  }
+};
+
+const bulkUpdate = async (ids, data) => {
+  const idObjects = ids.map(id => mongoose.Types.ObjectId.isValid(id) ? new mongoose.Types.ObjectId(id) : id);
+  const result = await Match.updateMany(
+    { 
+      $or: [
+        { _id: { $in: idObjects.filter(id => id instanceof mongoose.Types.ObjectId) } },
+        { id: { $in: ids } }
+      ]
+    },
+    { $set: data }
+  );
+  return { matchedCount: result.matchedCount, modifiedCount: result.modifiedCount };
+};
+
+const bulkDelete = async (ids) => {
+  const idObjects = ids.map(id => mongoose.Types.ObjectId.isValid(id) ? new mongoose.Types.ObjectId(id) : id);
+  const result = await Match.updateMany(
+    { 
+      $or: [
+        { _id: { $in: idObjects.filter(id => id instanceof mongoose.Types.ObjectId) } },
+        { id: { $in: ids } }
+      ]
+    },
+    { 
+      $set: { 
+        isDeleted: true, 
+        isDeletedAt: new Date() 
+      } 
+    }
+  );
+  return { deletedCount: result.modifiedCount };
+};
+
+const bulkArchive = async (ids) => {
+  const idObjects = ids.map(id => mongoose.Types.ObjectId.isValid(id) ? new mongoose.Types.ObjectId(id) : id);
+  const result = await Match.updateMany(
+    { 
+      $or: [
+        { _id: { $in: idObjects.filter(id => id instanceof mongoose.Types.ObjectId) } },
+        { id: { $in: ids } }
+      ]
+    },
+    { $set: { isArchived: true } }
+  );
+  return { archivedCount: result.modifiedCount };
+};
+
+const bulkRestore = async (ids) => {
+  const idObjects = ids.map(id => mongoose.Types.ObjectId.isValid(id) ? new mongoose.Types.ObjectId(id) : id);
+  const result = await Match.updateMany(
+    { 
+      $or: [
+        { _id: { $in: idObjects.filter(id => id instanceof mongoose.Types.ObjectId) } },
+        { id: { $in: ids } }
+      ]
+    },
+    { $set: { isArchived: false, isDeleted: false, isDeletedAt: null } }
+  );
+  return { restoredCount: result.modifiedCount };
+};
+
 const getRatedMatches = async (query) => {
   const filter = buildFilter(query);
   filter.rated = { $in: ['TRUE', 'True'] };
@@ -725,6 +798,11 @@ module.exports = {
   getRandomMatch,
   archiveMatch,
   restoreMatch,
+  bulkUpload,
+  bulkUpdate,
+  bulkDelete,
+  bulkArchive,
+  bulkRestore,
   getRatedMatches,
   getUnratedMatches,
   getWhiteWinsMatches,

@@ -172,6 +172,35 @@ const getHighestRatedMatches = asyncHandler(async (req, res) => {
   sendSuccess(res, 200, 'Highest rated matches retrieved successfully', data, meta);
 });
 
+const bulkUpload = asyncHandler(async (req, res) => {
+  const result = await matchService.bulkUpload(req.body);
+  sendSuccess(res, 201, 'Bulk matches uploaded successfully', result);
+});
+
+const bulkUpdate = asyncHandler(async (req, res) => {
+  const { ids, data } = req.body;
+  const result = await matchService.bulkUpdate(ids, data);
+  sendSuccess(res, 200, 'Bulk matches updated successfully', result);
+});
+
+const bulkDelete = asyncHandler(async (req, res) => {
+  const { ids } = req.body;
+  const result = await matchService.bulkDelete(ids);
+  sendSuccess(res, 200, 'Bulk matches soft deleted successfully', result);
+});
+
+const bulkArchive = asyncHandler(async (req, res) => {
+  const { ids } = req.body;
+  const result = await matchService.bulkArchive(ids);
+  sendSuccess(res, 200, 'Bulk matches archived successfully', result);
+});
+
+const bulkRestore = asyncHandler(async (req, res) => {
+  const { ids } = req.body;
+  const result = await matchService.bulkRestore(ids);
+  sendSuccess(res, 200, 'Bulk matches restored successfully', result);
+});
+
 module.exports = {
   getAllMatches,
   getMatchById,
@@ -206,5 +235,10 @@ module.exports = {
   getInfiniteMatches,
   getShortestMatches,
   getLongestMatches,
-  getHighestRatedMatches
+  getHighestRatedMatches,
+  bulkUpload,
+  bulkUpdate,
+  bulkDelete,
+  bulkArchive,
+  bulkRestore
 };

@@ -87,6 +87,21 @@ const getWhiteWinsMatches = asyncHandler(async (req, res) => {
   sendSuccess(res, 200, 'White win matches retrieved successfully', data, meta);
 });
 
+const getBlackWinsMatches = asyncHandler(async (req, res) => {
+  const { data, meta } = await matchService.getBlackWinsMatches(req.query);
+  sendSuccess(res, 200, 'Black win matches retrieved successfully', data, meta);
+});
+
+const getDrawsMatches = asyncHandler(async (req, res) => {
+  const { data, meta } = await matchService.getDrawsMatches(req.query);
+  sendSuccess(res, 200, 'Draw matches retrieved successfully', data, meta);
+});
+
+const getCheckmatesMatches = asyncHandler(async (req, res) => {
+  const { data, meta } = await matchService.getCheckmatesMatches(req.query);
+  sendSuccess(res, 200, 'Checkmate matches retrieved successfully', data, meta);
+});
+
 module.exports = {
   getAllMatches,
   getMatchById,
@@ -104,5 +119,8 @@ module.exports = {
   restoreMatch, 
   getRatedMatches,
   getUnratedMatches,
-  getWhiteWinsMatches
+  getWhiteWinsMatches,
+  getBlackWinsMatches,
+  getDrawsMatches,
+  getCheckmatesMatches
 };

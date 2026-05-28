@@ -211,6 +211,54 @@ const getWhiteWinsMatches = async (query) => {
   return { data: matches, meta };
 };
 
+const getBlackWinsMatches = async (query) => {
+  const filter = buildFilter(query);
+  filter.winner = 'black';
+  const sort = buildSort(query.sort);
+  
+  const totalCount = await Match.countDocuments(filter);
+  const meta = paginate(query, totalCount);
+
+  const matches = await Match.find(filter)
+    .sort(sort)
+    .skip(meta.skip)
+    .limit(meta.limit);
+
+  return { data: matches, meta };
+};
+
+const getDrawsMatches = async (query) => {
+  const filter = buildFilter(query);
+  filter.winner = 'draw';
+  const sort = buildSort(query.sort);
+  
+  const totalCount = await Match.countDocuments(filter);
+  const meta = paginate(query, totalCount);
+
+  const matches = await Match.find(filter)
+    .sort(sort)
+    .skip(meta.skip)
+    .limit(meta.limit);
+
+  return { data: matches, meta };
+};
+
+const getCheckmatesMatches = async (query) => {
+  const filter = buildFilter(query);
+  filter.victory_status = 'mate';
+  const sort = buildSort(query.sort);
+  
+  const totalCount = await Match.countDocuments(filter);
+  const meta = paginate(query, totalCount);
+
+  const matches = await Match.find(filter)
+    .sort(sort)
+    .skip(meta.skip)
+    .limit(meta.limit);
+
+  return { data: matches, meta };
+};
+
 module.exports = {
   getAllMatches,
   getMatchById,
@@ -228,5 +276,8 @@ module.exports = {
   restoreMatch,
   getRatedMatches,
   getUnratedMatches,
-  getWhiteWinsMatches
+  getWhiteWinsMatches,
+  getBlackWinsMatches,
+  getDrawsMatches,
+  getCheckmatesMatches
 };

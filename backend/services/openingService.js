@@ -176,6 +176,33 @@ const getWhiteAdvantageOpenings = async () => {
   return await Match.aggregate(pipeline);
 };
 
+const getBlackAdvantageOpenings = async () => {
+  const pipeline = getOpeningBasePipeline();
+  pipeline.push(
+    { $match: { blackWinRate: { $gt: 45 }, totalGames: { $gte: 5 } } },
+    { $sort: { blackWinRate: -1 } }
+  );
+  return await Match.aggregate(pipeline);
+};
+
+const getBeginnerFriendlyOpenings = async () => {
+  const pipeline = getOpeningBasePipeline();
+  pipeline.push(
+    { $match: { complexityLevel: 'Beginner', totalGames: { $gte: 10 } } },
+    { $sort: { totalGames: -1 } }
+  );
+  return await Match.aggregate(pipeline);
+};
+
+const getOpeningsByComplexity = async (level) => {
+  const pipeline = getOpeningBasePipeline();
+  pipeline.push(
+    { $match: { complexityLevel: level } },
+    { $sort: { totalGames: -1 } }
+  );
+  return await Match.aggregate(pipeline);
+};
+
 module.exports = {
   getAllOpenings,
   getPopularOpenings,
@@ -188,5 +215,8 @@ module.exports = {
   getGambitOpenings,
   getFastestCheckmates,
   getRareOpenings,
-  getWhiteAdvantageOpenings
+  getWhiteAdvantageOpenings,
+  getBlackAdvantageOpenings,
+  getBeginnerFriendlyOpenings,
+  getOpeningsByComplexity
 };

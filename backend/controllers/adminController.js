@@ -43,10 +43,22 @@ const banUser = asyncHandler(async (req, res) => {
   sendSuccess(res, 200, `User ${user.username} banned successfully`, { username: user.username, isBanned: true });
 });
 
+const unbanUser = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const user = await User.findById(id);
+  if (!user) {
+    throw Object.assign(new Error('User not found'), { statusCode: 404 });
+  }
+  user.isBanned = false;
+  await user.save();
+  sendSuccess(res, 200, `User ${user.username} unbanned successfully`, { username: user.username, isBanned: false });
+});
+
 module.exports = {
   getUsersList,
   getLogs,
   getSystemHealth,
   clearCache,
   banUser,
+  unbanUser,
 };

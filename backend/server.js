@@ -11,6 +11,7 @@ const openingRoutes = require('./routes/openingRoutes');
 const searchRoutes = require('./routes/searchRoutes');
 const analyticsRoutes = require('./routes/analyticsRoutes');
 const statsRoutes = require('./routes/statsRoutes');
+const authRoutes = require('./routes/authRoutes');
 const { sendError } = require('./utils/apiResponse');
 
 const app = express();
@@ -45,6 +46,7 @@ app.use('/api/v1/openings', openingRoutes);
 app.use('/api/v1/search', searchRoutes); 
 app.use('/api/v1/analytics', analyticsRoutes); 
 app.use('/api/v1/stats', statsRoutes); 
+app.use('/api/v1/auth', authRoutes);
 
 app.use((req, res, next) => {
   res.status(404);

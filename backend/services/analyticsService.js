@@ -94,6 +94,136 @@ const getTimeControlUsage = async () => {
   ]);
 };
 
+const getRatingGapUpsets = async () => {
+  return await Match.aggregate([
+    { $match: { isDeleted: { $ne: true } } },
+    {
+      $project: {
+        id: 1,
+        white_id: 1,
+        black_id: 1,
+        white_rating: { $toInt: "$white_rating" },
+        black_rating: { $toInt: "$black_rating" },
+        winner: 1,
+        opening_name: 1,
+        victory_status: 1
+      }
+    },
+    {
+      $project: {
+        id: 1,
+        white_id: 1,
+        black_id: 1,
+        white_rating: 1,
+        black_rating: 1,
+        winner: 1,
+        opening_name: 1,
+        victory_status: 1,
+        ratingDiff: {
+          $cond: [
+            { $eq: ["$winner", "white"] },
+            { $subtract: ["$black_rating", "$white_rating"] },
+            {
+              $cond: [
+                { $eq: ["$winner", "black"] },
+                { $subtract: ["$white_rating", "$black_rating"] },
+                0
+              ]
+            }
+          ]
+        }
+      }
+    },
+    { $match: { ratingDiff: { $gt: 0 } } },
+    { $sort: { ratingDiff: -1 } },
+    { $limit: 20 }
+  ]);
+};
+
+const getCheckmateFrequency = async () => {
+  const result = await Match.aggregate([
+    { $match: { isDeleted: { $ne: true } } },
+    {
+      $group: {
+        _id: null,
+        total: { $sum: 1 },
+        checkmates: { $sum: { $cond: [{ $eq: ["$victory_status", "mate"] }, 1, 0] } }
+      }
+    },
+    {
+      $project: {
+        total: 1,
+        count: "$checkmates",
+        percentage: { $multiply: [{ $divide: ["$checkmates", "$total"] }, 100] },
+        _id: 0
+      }
+    }
+  ]);
+  return result[0] || { total: 0, count: 0, percentage: 0 };
+};
+
+const getDrawFrequency = async () => {
+  const result = await Match.aggregate([
+    { $match: { isDeleted: { $ne: true } } },
+    {
+      $group: {
+        _id: null,
+        total: { $sum: 1 },
+        draws: { $sum: { $cond: [{ $or: [{ $eq: ["$winner", "draw"] }, { $eq: ["$victory_status", "draw"] }] }, 1, 0] } }
+      }
+    },
+    {
+      $project: {
+        total: 1,
+        count: "$draws",
+        percentage: { $multiply: [{ $divide: ["$draws", "$total"] }, 100] },
+        _id: 0
+      }
+    }
+  ]);
+  return result[0] || { total: 0, count: 0, percentage: 0 };
+};
+
+const getShortestGames = async (limit) => {
+  const finalLimit = parseInt(limit, 10) || 10;
+  return await Match.aggregate([
+    { $match: { isDeleted: { $ne: true } } },
+    {
+      $project: {
+        id: 1,
+        white_id: 1,
+        black_id: 1,
+        winner: 1,
+        turns: { $toInt: "$turns" },
+        opening_name: 1,
+        victory_status: 1
+      }
+    },
+    { $sort: { turns: 1 } },
+    { $limit: finalLimit }
+  ]);
+};
+
+const getLongestGames = async (limit) => {
+  const finalLimit = parseInt(limit, 10) || 10;
+  return await Match.aggregate([
+    { $match: { isDeleted: { $ne: true } } },
+    {
+      $project: {
+        id: 1,
+        white_id: 1,
+        black_id: 1,
+        winner: 1,
+        turns: { $toInt: "$turns" },
+        opening_name: 1,
+        victory_status: 1
+      }
+    },
+    { $sort: { turns: -1 } },
+    { $limit: finalLimit }
+  ]);
+};
+
 const getTopGames = async (query) => {
   const page = Math.max(1, parseInt(query.page) || 1);
   const limit = Math.min(100, Math.max(1, parseInt(query.limit) || 10));
@@ -126,5 +256,10 @@ module.exports = {
   getAverageTurnCount,
   getRatedVsCasual,
   getTimeControlUsage,
+  getRatingGapUpsets,
+  getCheckmateFrequency,
+  getDrawFrequency,
+  getShortestGames,
+  getLongestGames,
   getTopGames
 };

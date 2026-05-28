@@ -22,9 +22,21 @@ const updateMatch = asyncHandler(async (req, res) => {
   sendSuccess(res, 200, 'Match updated successfully', match);
 });
 
+const deleteMatch = asyncHandler(async (req, res) => {
+  const result = await matchService.deleteMatch(req.params.matchId);
+  sendSuccess(res, 200, 'Match soft deleted successfully', result);
+});
+
+const getMatchMoves = asyncHandler(async (req, res) => {
+  const moves = await matchService.getMatchMoves(req.params.matchId);
+  sendSuccess(res, 200, 'Match moves retrieved successfully', moves);
+});
+
 module.exports = {
   getAllMatches,
   getMatchById,
   createMatch,
   updateMatch,
+  deleteMatch,
+  getMatchMoves,
 };

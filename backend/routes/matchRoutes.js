@@ -74,6 +74,18 @@ router.options('/filter/rapid', (req, res) => {
   res.set('Allow', 'GET, OPTIONS').status(204).send();
 });
 
+router.options('/filter/blitz', (req, res) => {
+  res.set('Allow', 'GET, OPTIONS').status(204).send();
+});
+
+router.options('/filter/bullet', (req, res) => {
+  res.set('Allow', 'GET, OPTIONS').status(204).send();
+});
+
+router.options('/filter/classical', (req, res) => {
+  res.set('Allow', 'GET, OPTIONS').status(204).send();
+});
+
 router.head('/', asyncHandler(async (req, res) => {
   const count = await Match.countDocuments({ isDeleted: { $ne: true } });
   res.set('X-Total-Count', count).status(200).send();
@@ -91,6 +103,9 @@ router.get('/filter/checkmates', matchController.getCheckmatesMatches);
 router.get('/filter/resignations', matchController.getResignationsMatches);
 router.get('/filter/timeouts', matchController.getTimeoutsMatches);
 router.get('/filter/rapid', matchController.getRapidMatches);
+router.get('/filter/blitz', matchController.getBlitzMatches);
+router.get('/filter/bullet', matchController.getBulletMatches);
+router.get('/filter/classical', matchController.getClassicalMatches);
 router.get('/', matchController.getAllMatches);
 router.post('/', validateCreateMatch, matchController.createMatch);
 router.get('/:matchId/moves', matchController.getMatchMoves);

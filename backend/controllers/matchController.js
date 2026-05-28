@@ -117,6 +117,21 @@ const getRapidMatches = asyncHandler(async (req, res) => {
   sendSuccess(res, 200, 'Rapid matches retrieved successfully', data, meta);
 });
 
+const getBulletMatches = asyncHandler(async (req, res) => {
+  const { data, meta } = await matchService.getBulletMatches(req.query);
+  sendSuccess(res, 200, 'Bullet matches retrieved successfully', data, meta);
+});
+
+const getBlitzMatches = asyncHandler(async (req, res) => {
+  const { data, meta } = await matchService.getBlitzMatches(req.query);
+  sendSuccess(res, 200, 'Blitz matches retrieved successfully', data, meta);
+});
+
+const getClassicalMatches = asyncHandler(async (req, res) => {
+  const { data, meta } = await matchService.getClassicalMatches(req.query);
+  sendSuccess(res, 200, 'Classical matches retrieved successfully', data, meta);
+});
+
 module.exports = {
   getAllMatches,
   getMatchById,
@@ -140,5 +155,8 @@ module.exports = {
   getCheckmatesMatches,
   getResignationsMatches,
   getTimeoutsMatches,
-  getRapidMatches
+  getRapidMatches,
+  getBulletMatches,
+  getBlitzMatches,
+  getClassicalMatches
 };

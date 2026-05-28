@@ -21,5 +21,10 @@ router.get('/timeout-rate', statsController.getTimeoutRate);
 router.get('/white-win-rate', statsController.getWhiteWinRate);
 router.get('/black-win-rate', statsController.getBlackWinRate);
 router.get('/draw-rate', statsController.getDrawRate);
+router.get('/rated-games', statsController.getRatedGamesCount);
+router.get('/unrated-games', statsController.getUnratedGamesCount);
+router.get('/daily-games', statsController.getDailyGamesStats);
+router.get('/monthly-games', statsController.getMonthlyGamesStats);
+router.get('/yearly-games', statsController.getYearlyGamesStats);
 
 module.exports = router;

@@ -87,6 +87,56 @@ const getDrawRate = async () => {
   return (count / total) * 100;
 };
 
+const getRatedGamesCount = async () => {
+  return await Match.countDocuments({ rated: { $in: ['TRUE', 'True'] }, isDeleted: { $ne: true } });
+};
+
+const getUnratedGamesCount = async () => {
+  return await Match.countDocuments({ rated: { $in: ['FALSE', 'False'] }, isDeleted: { $ne: true } });
+};
+
+const getDailyGamesStats = async () => {
+  return await Match.aggregate([
+    { $match: { isDeleted: { $ne: true } } },
+    {
+      $project: {
+        day: { $dateToString: { format: "%Y-%m-%d", date: { $toDate: { $toDouble: "$created_at" } } } }
+      }
+    },
+    { $group: { _id: "$day", count: { $sum: 1 } } },
+    { $project: { date: "$_id", count: 1, _id: 0 } },
+    { $sort: { date: 1 } }
+  ]);
+};
+
+const getMonthlyGamesStats = async () => {
+  return await Match.aggregate([
+    { $match: { isDeleted: { $ne: true } } },
+    {
+      $project: {
+        month: { $dateToString: { format: "%Y-%m", date: { $toDate: { $toDouble: "$created_at" } } } }
+      }
+    },
+    { $group: { _id: "$month", count: { $sum: 1 } } },
+    { $project: { date: "$_id", count: 1, _id: 0 } },
+    { $sort: { date: 1 } }
+  ]);
+};
+
+const getYearlyGamesStats = async () => {
+  return await Match.aggregate([
+    { $match: { isDeleted: { $ne: true } } },
+    {
+      $project: {
+        year: { $dateToString: { format: "%Y", date: { $toDate: { $toDouble: "$created_at" } } } }
+      }
+    },
+    { $group: { _id: "$year", count: { $sum: 1 } } },
+    { $project: { date: "$_id", count: 1, _id: 0 } },
+    { $sort: { date: 1 } }
+  ]);
+};
+
 module.exports = {
   getTotalMatches,
   getTotalPlayers,
@@ -97,5 +147,10 @@ module.exports = {
   getTimeoutRate,
   getWhiteWinRate,
   getBlackWinRate,
-  getDrawRate
+  getDrawRate,
+  getRatedGamesCount,
+  getUnratedGamesCount,
+  getDailyGamesStats,
+  getMonthlyGamesStats,
+  getYearlyGamesStats
 };

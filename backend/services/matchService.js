@@ -428,6 +428,97 @@ const getClassicalMatches = async (query) => {
   return { data: matches, meta };
 };
 
+const getHighRatedMatches = async (query) => {
+  const filter = buildFilter(query);
+  const hrExpr = {
+    $and: [
+      { $gte: [{ $toInt: "$white_rating" }, 1800] },
+      { $gte: [{ $toInt: "$black_rating" }, 1800] }
+    ]
+  };
+
+  if (filter.$expr) {
+    if (filter.$expr.$and) {
+      filter.$expr.$and.push(hrExpr);
+    } else {
+      filter.$expr = { $and: [filter.$expr, hrExpr] };
+    }
+  } else {
+    filter.$expr = hrExpr;
+  }
+  
+  const sort = buildSort(query.sort);
+  
+  const totalCount = await Match.countDocuments(filter);
+  const meta = paginate(query, totalCount);
+
+  const matches = await Match.find(filter)
+    .sort(sort)
+    .skip(meta.skip)
+    .limit(meta.limit);
+
+  return { data: matches, meta };
+};
+
+const getLowRatedMatches = async (query) => {
+  const filter = buildFilter(query);
+  const lrExpr = {
+    $and: [
+      { $lt: [{ $toInt: "$white_rating" }, 1400] },
+      { $lt: [{ $toInt: "$black_rating" }, 1400] }
+    ]
+  };
+
+  if (filter.$expr) {
+    if (filter.$expr.$and) {
+      filter.$expr.$and.push(lrExpr);
+    } else {
+      filter.$expr = { $and: [filter.$expr, lrExpr] };
+    }
+  } else {
+    filter.$expr = lrExpr;
+  }
+  
+  const sort = buildSort(query.sort);
+  
+  const totalCount = await Match.countDocuments(filter);
+  const meta = paginate(query, totalCount);
+
+  const matches = await Match.find(filter)
+    .sort(sort)
+    .skip(meta.skip)
+    .limit(meta.limit);
+
+  return { data: matches, meta };
+};
+
+const getLongGamesMatches = async (query) => {
+  const filter = buildFilter(query);
+  const lgExpr = { $gte: [{ $toInt: "$turns" }, 80] };
+
+  if (filter.$expr) {
+    if (filter.$expr.$and) {
+      filter.$expr.$and.push(lgExpr);
+    } else {
+      filter.$expr = { $and: [filter.$expr, lgExpr] };
+    }
+  } else {
+    filter.$expr = lgExpr;
+  }
+  
+  const sort = buildSort(query.sort);
+  
+  const totalCount = await Match.countDocuments(filter);
+  const meta = paginate(query, totalCount);
+
+  const matches = await Match.find(filter)
+    .sort(sort)
+    .skip(meta.skip)
+    .limit(meta.limit);
+
+  return { data: matches, meta };
+};
+
 module.exports = {
   getAllMatches,
   getMatchById,
@@ -454,5 +545,8 @@ module.exports = {
   getRapidMatches,
   getBulletMatches,
   getBlitzMatches,
-  getClassicalMatches
+  getClassicalMatches,
+  getHighRatedMatches,
+  getLowRatedMatches,
+  getLongGamesMatches
 };

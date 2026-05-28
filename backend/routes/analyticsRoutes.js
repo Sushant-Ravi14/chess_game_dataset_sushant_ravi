@@ -11,6 +11,11 @@ router.use((req, res, next) => {
   next();
 });
 
+router.get('/victory-distribution', analyticsController.getVictoryDistribution);
+router.get('/color-advantage', analyticsController.getColorAdvantage);
+router.get('/turn-count-average', analyticsController.getAverageTurnCount);
+router.get('/rated-vs-casual', analyticsController.getRatedVsCasual);
+router.get('/time-control-usage', analyticsController.getTimeControlUsage);
 router.get('/top-games', analyticsController.getTopGames);
 
 module.exports = router;

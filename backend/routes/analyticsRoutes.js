@@ -16,6 +16,11 @@ router.get('/color-advantage', analyticsController.getColorAdvantage);
 router.get('/turn-count-average', analyticsController.getAverageTurnCount);
 router.get('/rated-vs-casual', analyticsController.getRatedVsCasual);
 router.get('/time-control-usage', analyticsController.getTimeControlUsage);
+router.get('/shortest-games', analyticsController.getShortestGames);
+router.get('/longest-games', analyticsController.getLongestGames);
+router.get('/rating-gap-upsets', analyticsController.getRatingGapUpsets);
+router.get('/checkmate-frequency', analyticsController.getCheckmateFrequency);
+router.get('/draw-frequency', analyticsController.getDrawFrequency);
 router.get('/top-games', analyticsController.getTopGames);
 
 module.exports = router;

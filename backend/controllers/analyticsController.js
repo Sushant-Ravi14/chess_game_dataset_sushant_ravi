@@ -27,6 +27,33 @@ const getTimeControlUsage = asyncHandler(async (req, res) => {
   sendSuccess(res, 200, 'Time control usage statistics retrieved successfully', usage);
 });
 
+const getRatingGapUpsets = asyncHandler(async (req, res) => {
+  const upsets = await analyticsService.getRatingGapUpsets();
+  sendSuccess(res, 200, 'Rating gap upsets retrieved successfully', upsets);
+});
+
+const getCheckmateFrequency = asyncHandler(async (req, res) => {
+  const freq = await analyticsService.getCheckmateFrequency();
+  sendSuccess(res, 200, 'Checkmate frequency retrieved successfully', freq);
+});
+
+const getDrawFrequency = asyncHandler(async (req, res) => {
+  const freq = await analyticsService.getDrawFrequency();
+  sendSuccess(res, 200, 'Draw frequency retrieved successfully', freq);
+});
+
+const getShortestGames = asyncHandler(async (req, res) => {
+  const { limit } = req.query;
+  const games = await analyticsService.getShortestGames(limit);
+  sendSuccess(res, 200, 'Shortest matches retrieved successfully', games);
+});
+
+const getLongestGames = asyncHandler(async (req, res) => {
+  const { limit } = req.query;
+  const games = await analyticsService.getLongestGames(limit);
+  sendSuccess(res, 200, 'Longest matches retrieved successfully', games);
+});
+
 const getTopGames = asyncHandler(async (req, res) => {
   const { data, meta } = await analyticsService.getTopGames(req.query);
   sendSuccess(res, 200, 'Top rated games retrieved successfully', data, meta);
@@ -38,5 +65,10 @@ module.exports = {
   getAverageTurnCount,
   getRatedVsCasual,
   getTimeControlUsage,
+  getRatingGapUpsets,
+  getCheckmateFrequency,
+  getDrawFrequency,
+  getShortestGames,
+  getLongestGames,
   getTopGames
 };

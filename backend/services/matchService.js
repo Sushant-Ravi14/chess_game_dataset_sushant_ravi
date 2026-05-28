@@ -4,6 +4,25 @@ const buildFilter = require('../utils/buildFilter');
 const buildSort = require('../utils/buildSort');
 const { paginate } = require('../utils/pagination');
 
+const durationExpr = {
+  $let: {
+    vars: {
+      parts: { $split: ["$increment_code", "+"] }
+    },
+    in: {
+      $let: {
+        vars: {
+          base: { $toDouble: { $arrayElemAt: ["$$parts", 0] } },
+          inc: { $toDouble: { $arrayElemAt: ["$$parts", 1] } }
+        },
+        in: {
+          $add: [{ $multiply: ["$$base", 60] }, { $multiply: ["$$inc", 40] }]
+        }
+      }
+    }
+  }
+};
+
 const getAllMatches = async (query) => {
   const filter = buildFilter(query);
   const sort = buildSort(query.sort);
@@ -291,36 +310,72 @@ const getTimeoutsMatches = async (query) => {
   return { data: matches, meta };
 };
 
+const getBulletMatches = async (query) => {
+  const filter = buildFilter(query);
+  const bulletExpr = { $lt: [durationExpr, 180] };
+  
+  if (filter.$expr) {
+    if (filter.$expr.$and) {
+      filter.$expr.$and.push(bulletExpr);
+    } else {
+      filter.$expr = { $and: [filter.$expr, bulletExpr] };
+    }
+  } else {
+    filter.$expr = bulletExpr;
+  }
+  
+  const sort = buildSort(query.sort);
+  
+  const totalCount = await Match.countDocuments(filter);
+  const meta = paginate(query, totalCount);
+
+  const matches = await Match.find(filter)
+    .sort(sort)
+    .skip(meta.skip)
+    .limit(meta.limit);
+
+  return { data: matches, meta };
+};
+
+const getBlitzMatches = async (query) => {
+  const filter = buildFilter(query);
+  const blitzExpr = {
+    $and: [
+      { $gte: [durationExpr, 180] },
+      { $lt: [durationExpr, 480] }
+    ]
+  };
+  
+  if (filter.$expr) {
+    if (filter.$expr.$and) {
+      filter.$expr.$and.push(blitzExpr);
+    } else {
+      filter.$expr = { $and: [filter.$expr, blitzExpr] };
+    }
+  } else {
+    filter.$expr = blitzExpr;
+  }
+  
+  const sort = buildSort(query.sort);
+  
+  const totalCount = await Match.countDocuments(filter);
+  const meta = paginate(query, totalCount);
+
+  const matches = await Match.find(filter)
+    .sort(sort)
+    .skip(meta.skip)
+    .limit(meta.limit);
+
+  return { data: matches, meta };
+};
+
 const getRapidMatches = async (query) => {
   const filter = buildFilter(query);
-  
   const rapidExpr = {
-    $let: {
-      vars: {
-        parts: { $split: ["$increment_code", "+"] }
-      },
-      in: {
-        $let: {
-          vars: {
-            base: { $toDouble: { $arrayElemAt: ["$$parts", 0] } },
-            inc: { $toDouble: { $arrayElemAt: ["$$parts", 1] } }
-          },
-          in: {
-            $let: {
-              vars: {
-                totalSec: { $add: [{ $multiply: ["$$base", 60] }, { $multiply: ["$$inc", 40] }] }
-              },
-              in: {
-                $and: [
-                  { $gte: ["$$totalSec", 480] },
-                  { $lt: ["$$totalSec", 1500] }
-                ]
-              }
-            }
-          }
-        }
-      }
-    }
+    $and: [
+      { $gte: [durationExpr, 480] },
+      { $lt: [durationExpr, 1500] }
+    ]
   };
 
   if (filter.$expr) {
@@ -331,6 +386,33 @@ const getRapidMatches = async (query) => {
     }
   } else {
     filter.$expr = rapidExpr;
+  }
+  
+  const sort = buildSort(query.sort);
+  
+  const totalCount = await Match.countDocuments(filter);
+  const meta = paginate(query, totalCount);
+
+  const matches = await Match.find(filter)
+    .sort(sort)
+    .skip(meta.skip)
+    .limit(meta.limit);
+
+  return { data: matches, meta };
+};
+
+const getClassicalMatches = async (query) => {
+  const filter = buildFilter(query);
+  const classicalExpr = { $gte: [durationExpr, 1500] };
+  
+  if (filter.$expr) {
+    if (filter.$expr.$and) {
+      filter.$expr.$and.push(classicalExpr);
+    } else {
+      filter.$expr = { $and: [filter.$expr, classicalExpr] };
+    }
+  } else {
+    filter.$expr = classicalExpr;
   }
   
   const sort = buildSort(query.sort);
@@ -369,5 +451,8 @@ module.exports = {
   getCheckmatesMatches,
   getResignationsMatches,
   getTimeoutsMatches,
-  getRapidMatches
+  getRapidMatches,
+  getBulletMatches,
+  getBlitzMatches,
+  getClassicalMatches
 };

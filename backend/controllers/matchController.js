@@ -132,6 +132,21 @@ const getClassicalMatches = asyncHandler(async (req, res) => {
   sendSuccess(res, 200, 'Classical matches retrieved successfully', data, meta);
 });
 
+const getHighRatedMatches = asyncHandler(async (req, res) => {
+  const { data, meta } = await matchService.getHighRatedMatches(req.query);
+  sendSuccess(res, 200, 'High rated matches retrieved successfully', data, meta);
+});
+
+const getLowRatedMatches = asyncHandler(async (req, res) => {
+  const { data, meta } = await matchService.getLowRatedMatches(req.query);
+  sendSuccess(res, 200, 'Low rated matches retrieved successfully', data, meta);
+});
+
+const getLongGamesMatches = asyncHandler(async (req, res) => {
+  const { data, meta } = await matchService.getLongGamesMatches(req.query);
+  sendSuccess(res, 200, 'Long duration games retrieved successfully', data, meta);
+});
+
 module.exports = {
   getAllMatches,
   getMatchById,
@@ -158,5 +173,8 @@ module.exports = {
   getRapidMatches,
   getBulletMatches,
   getBlitzMatches,
-  getClassicalMatches
+  getClassicalMatches,
+  getHighRatedMatches,
+  getLowRatedMatches,
+  getLongGamesMatches
 };

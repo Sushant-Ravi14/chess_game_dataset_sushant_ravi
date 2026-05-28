@@ -261,6 +261,71 @@ const getMostActivePlayers = async (query) => {
   return players;
 };
 
+const getHighestWinningPlayers = async (query) => {
+  const limit = Math.min(100, Math.max(1, parseInt(query.limit) || 10));
+  const pipeline = getPlayerAggregatePipeline(null);
+  
+  pipeline.push({ $sort: { wins: -1 } }, { $limit: limit });
+  const players = await Match.aggregate(pipeline);
+  return players;
+};
+
+const comparePlayers = async (p1, p2) => {
+  const player1 = await getPlayerByUsername(p1);
+  const player2 = await getPlayerByUsername(p2);
+  
+  return {
+    player1: {
+      username: player1.username,
+      totalGames: player1.totalGames,
+      wins: player1.wins,
+      losses: player1.losses,
+      draws: player1.draws,
+      winRate: player1.winRate,
+      currentRating: player1.currentRating
+    },
+    player2: {
+      username: player2.username,
+      totalGames: player2.totalGames,
+      wins: player2.wins,
+      losses: player2.losses,
+      draws: player2.draws,
+      winRate: player2.winRate,
+      currentRating: player2.currentRating
+    }
+  };
+};
+
+const getPlayersByRatingRange = async (min, max, query) => {
+  const minRating = parseInt(min, 10) || 0;
+  const maxRating = parseInt(max, 10) || 9999;
+
+  const page = Math.max(1, parseInt(query.page) || 1);
+  const limit = Math.min(100, Math.max(1, parseInt(query.limit) || 10));
+  const skip = (page - 1) * limit;
+
+  const pipeline = getPlayerAggregatePipeline(null);
+  
+  pipeline.push({
+    $match: { currentRating: { $gte: minRating, $lte: maxRating } }
+  });
+
+  const allResults = await Match.aggregate(pipeline);
+  const totalCount = allResults.length;
+
+  const paginatedPipeline = [
+    ...pipeline,
+    { $sort: { currentRating: -1 } },
+    { $skip: skip },
+    { $limit: limit }
+  ];
+  
+  const players = await Match.aggregate(paginatedPipeline);
+  const meta = paginate(query, totalCount);
+
+  return { data: players, meta };
+};
+
 module.exports = {
   getAllPlayers,
   getPlayerByUsername,
@@ -271,7 +336,10 @@ module.exports = {
   getPlayerWinRate,
   getPlayerLossRate,
   getPlayerDrawRate,
-  getRecentMatches, 
-  getTopRatedPlayers, 
-  getMostActivePlayers, 
+  getRecentMatches,
+  getTopRatedPlayers,
+  getMostActivePlayers,
+  getHighestWinningPlayers,
+  comparePlayers,
+  getPlayersByRatingRange,
 };

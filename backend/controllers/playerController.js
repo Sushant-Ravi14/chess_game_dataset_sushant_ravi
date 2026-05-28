@@ -62,6 +62,23 @@ const getMostActivePlayers = asyncHandler(async (req, res) => {
   sendSuccess(res, 200, 'Most active players retrieved successfully', players);
 });
 
+const getHighestWinningPlayers = asyncHandler(async (req, res) => {
+  const players = await playerService.getHighestWinningPlayers(req.query);
+  sendSuccess(res, 200, 'Highest winning players retrieved successfully', players);
+});
+
+const comparePlayers = asyncHandler(async (req, res) => {
+  const { player1, player2 } = req.params;
+  const comparison = await playerService.comparePlayers(player1, player2);
+  sendSuccess(res, 200, 'Players compared successfully', comparison);
+});
+
+const getPlayersByRatingRange = asyncHandler(async (req, res) => {
+  const { min, max } = req.query;
+  const { data, meta } = await playerService.getPlayersByRatingRange(min, max, req.query);
+  sendSuccess(res, 200, 'Players in rating range retrieved successfully', data, meta);
+});
+
 module.exports = {
   getAllPlayers,
   getPlayerByUsername,
@@ -72,7 +89,10 @@ module.exports = {
   getPlayerWinRate,
   getPlayerLossRate,
   getPlayerDrawRate,
-  getRecentMatches, 
-  getTopRatedPlayers, 
-  getMostActivePlayers, 
+  getRecentMatches,
+  getTopRatedPlayers,
+  getMostActivePlayers,
+  getHighestWinningPlayers,
+  comparePlayers, 
+  getPlayersByRatingRange, 
 };

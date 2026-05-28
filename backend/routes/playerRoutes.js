@@ -17,6 +17,18 @@ router.options('/top-active', (req, res) => {
   res.set('Allow', 'GET, OPTIONS').status(204).send();
 });
 
+router.options('/top-winning', (req, res) => {
+  res.set('Allow', 'GET, OPTIONS').status(204).send();
+});
+
+router.options('/rating-range', (req, res) => {
+  res.set('Allow', 'GET, OPTIONS').status(204).send();
+});
+
+router.options('/compare/:player1/:player2', (req, res) => {
+  res.set('Allow', 'GET, OPTIONS').status(204).send();
+});
+
 router.options('/:username', (req, res) => {
   res.set('Allow', 'GET, OPTIONS').status(204).send();
 });
@@ -62,6 +74,9 @@ router.head('/', asyncHandler(async (req, res) => {
 
 router.get('/top-rated', playerController.getTopRatedPlayers);
 router.get('/top-active', playerController.getMostActivePlayers);
+router.get('/top-winning', playerController.getHighestWinningPlayers); 
+router.get('/rating-range', playerController.getPlayersByRatingRange); 
+router.get('/compare/:player1/:player2', playerController.comparePlayers); 
 router.get('/', playerController.getAllPlayers);
 router.get('/:username/history', playerController.getPlayerHistory);
 router.get('/:username/recent', playerController.getRecentMatches);

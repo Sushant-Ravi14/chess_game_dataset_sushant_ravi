@@ -13,5 +13,6 @@ router.get('/system/health', adminController.getSystemHealth);
 router.delete('/cache/clear', adminController.clearCache);
 router.patch('/users/:id/ban', adminController.banUser);
 router.patch('/users/:id/unban', adminController.unbanUser);
+router.get('/protected/dashboard', adminController.getDashboardStats);
 
 module.exports = router;

@@ -1,4 +1,5 @@
 const User = require('../models/User');
+const Match = require('../models/Match');
 const { sendSuccess } = require('../utils/apiResponse');
 const asyncHandler = require('../utils/asyncHandler');
 const mongoose = require('mongoose');
@@ -54,6 +55,28 @@ const unbanUser = asyncHandler(async (req, res) => {
   sendSuccess(res, 200, `User ${user.username} unbanned successfully`, { username: user.username, isBanned: false });
 });
 
+const getDashboardStats = asyncHandler(async (req, res) => {
+  const totalUsers = await User.countDocuments();
+  const bannedUsers = await User.countDocuments({ isBanned: true });
+  const adminUsers = await User.countDocuments({ role: 'admin' });
+  const totalMatches = await Match.countDocuments();
+  const deletedMatches = await Match.countDocuments({ isDeleted: true });
+  const archivedMatches = await Match.countDocuments({ isArchived: true });
+
+  sendSuccess(res, 200, 'Admin dashboard statistics retrieved successfully', {
+    users: {
+      total: totalUsers,
+      banned: bannedUsers,
+      admins: adminUsers
+    },
+    matches: {
+      total: totalMatches,
+      deleted: deletedMatches,
+      archived: archivedMatches
+    }
+  });
+});
+
 module.exports = {
   getUsersList,
   getLogs,
@@ -61,4 +84,5 @@ module.exports = {
   clearCache,
   banUser,
   unbanUser,
+  getDashboardStats,
 };

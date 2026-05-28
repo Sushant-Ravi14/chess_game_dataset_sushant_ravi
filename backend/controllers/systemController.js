@@ -97,6 +97,53 @@ const reindexSearch = (req, res) => {
   sendSuccess(res, 200, 'Search database reindexing job initiated successfully.');
 };
 
+const restartSystem = (req, res) => {
+  // Mock system restart
+  sendSuccess(res, 200, 'System restart initiated. The server will reboot shortly.');
+  // In a real scenario, you might do process.exit(0) if managed by PM2, but we'll omit that to avoid crashing during dev.
+};
+
+const getConfig = (req, res) => {
+  sendSuccess(res, 200, 'Safe configuration overview retrieved successfully', {
+    env: process.env.NODE_ENV || 'development',
+    port: process.env.PORT || 5000,
+    rateLimitWindow: process.env.RATE_LIMIT_WINDOW_MS,
+    rateLimitMax: process.env.RATE_LIMIT_MAX_REQUESTS,
+    allowedOrigins: process.env.ALLOWED_ORIGINS,
+    debugMode: process.env.DEBUG_MODE,
+  });
+};
+
+const getSecurityEvents = (req, res) => {
+  // Mock security events
+  const events = [
+    { timestamp: new Date(Date.now() - 3600000).toISOString(), type: 'failed_login', ip: '192.168.1.100', details: 'Multiple failed login attempts' },
+    { timestamp: new Date(Date.now() - 86400000).toISOString(), type: 'rate_limit', ip: '203.0.113.45', details: 'Rate limit exceeded for endpoint /api/v1/auth/login' }
+  ];
+  sendSuccess(res, 200, 'Security events retrieved successfully', events);
+};
+
+const getPerformance = (req, res) => {
+  const hrTime = process.hrtime();
+  sendSuccess(res, 200, 'Performance metrics retrieved successfully', {
+    uptime: process.uptime(),
+    hrTime,
+    cpuUsage: process.cpuUsage(),
+    memory: process.memoryUsage(),
+  });
+};
+
+const getStorage = (req, res) => {
+  // Mock storage analytics
+  sendSuccess(res, 200, 'Storage analytics retrieved successfully', {
+    databaseSizeMB: 154.2,
+    indexesSizeMB: 28.5,
+    collectionsCount: 6,
+    documentsCount: 45213,
+    storageEngine: 'wiredTiger',
+  });
+};
+
 module.exports = {
   getHealth,
   getSystemInfo,
@@ -108,4 +155,9 @@ module.exports = {
   getCacheStatus,
   recalculateStats,
   reindexSearch,
+  restartSystem,
+  getConfig,
+  getSecurityEvents,
+  getPerformance,
+  getStorage,
 };

@@ -42,6 +42,21 @@ const getMatchFEN = asyncHandler(async (req, res) => {
   sendSuccess(res, 200, 'Match FEN retrieved successfully', fen);
 });
 
+const getMatchAnalysis = asyncHandler(async (req, res) => {
+  const analysis = await matchService.getMatchAnalysis(req.params.matchId);
+  sendSuccess(res, 200, 'Match analysis retrieved successfully', analysis);
+});
+
+const getLatestMatches = asyncHandler(async (req, res) => {
+  const { data, meta } = await matchService.getLatestMatches(req.query);
+  sendSuccess(res, 200, 'Latest matches retrieved successfully', data, meta);
+});
+
+const getTrendingMatches = asyncHandler(async (req, res) => {
+  const { data, meta } = await matchService.getTrendingMatches(req.query);
+  sendSuccess(res, 200, 'Trending matches retrieved successfully', data, meta);
+});
+
 module.exports = {
   getAllMatches,
   getMatchById,
@@ -51,4 +66,8 @@ module.exports = {
   getMatchMoves,
   getMatchPGN,
   getMatchFEN,
+  getMatchAnalysis,
+  getLatestMatches,
+  getTrendingMatches,
 };
+

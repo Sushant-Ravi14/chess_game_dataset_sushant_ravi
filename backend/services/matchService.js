@@ -92,6 +92,35 @@ const getMatchFEN = async (id) => {
   return { fen: match.final_fen || 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1' };
 };
 
+const getMatchAnalysis = async (id) => {
+  const match = await getMatchById(id);
+  return { analysis: match.analysis || null };
+};
+
+const getLatestMatches = async (query) => {
+  const filter = buildFilter(query);
+  const totalCount = await Match.countDocuments(filter);
+  const meta = paginate(query, totalCount);
+  const matches = await Match.find(filter)
+    .sort({ created_at: -1 })
+    .skip(meta.skip)
+    .limit(meta.limit);
+
+  return { data: matches, meta };
+};
+
+const getTrendingMatches = async (query) => {
+  const filter = buildFilter(query);
+  const totalCount = await Match.countDocuments(filter);
+  const meta = paginate(query, totalCount);
+  const matches = await Match.find({ ...filter, rated: { $in: ['TRUE', 'True'] } })
+    .sort({ turns: -1, created_at: -1 })
+    .skip(meta.skip)
+    .limit(meta.limit);
+
+  return { data: matches, meta };
+};
+
 module.exports = {
   getAllMatches,
   getMatchById,
@@ -101,4 +130,7 @@ module.exports = {
   getMatchMoves,
   getMatchPGN,
   getMatchFEN,
+  getMatchAnalysis,
+  getLatestMatches,
+  getTrendingMatches,
 };

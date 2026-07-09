@@ -11,6 +11,7 @@ router.use((req, res, next) => {
   next();
 });
 
+router.get('/', statsController.getDashboardStats);
 router.get('/total-matches', statsController.getTotalMatches);
 router.get('/total-players', statsController.getTotalPlayers);
 router.get('/average-rating', statsController.getAverageRating);

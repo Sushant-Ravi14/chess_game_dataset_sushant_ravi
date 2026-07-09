@@ -2,8 +2,10 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
-const morgan = require('morgan');
 const connectDB = require('./config/db');
+const loggerMiddleware = require('./middlewares/loggerMiddleware');
+const rateLimiter = require('./middlewares/rateLimiter');
+const errorHandler = require('./middlewares/errorHandler');
 
 const matchRoutes = require('./routes/matchRoutes');
 const playerRoutes = require('./routes/playerRoutes');
@@ -18,7 +20,6 @@ const protectedRoutes = require('./routes/protectedRoutes');
 const systemRoutes = require('./routes/systemRoutes');
 const systemController = require('./controllers/systemController');
 const optionsHeadMiddleware = require('./middlewares/optionsHeadMiddleware');
-const { sendError } = require('./utils/apiResponse');
 
 const app = express();
 
@@ -46,7 +47,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use(optionsHeadMiddleware);
-app.use(morgan('dev'));
+app.use(loggerMiddleware);
+app.use(rateLimiter);
 
 app.use('/api/v1/matches', matchRoutes);
 app.use('/api/v1/players', playerRoutes); 
@@ -62,19 +64,12 @@ app.use('/api/v1/system', systemRoutes);
 app.get('/api/v1/health', systemController.getHealth);
 
 app.use((req, res, next) => {
-  res.status(404);
-  next(new Error(`Route not found - [${req.method}] ${req.originalUrl}`));
+  const err = new Error(`Route not found - [${req.method}] ${req.originalUrl}`);
+  err.statusCode = 404;
+  next(err);
 });
 
-app.use((err, req, res, next) => {
-  const statusCode = err.statusCode || 500;
-  const message = err.message || 'Internal Server Error';
-  
-  if (process.env.NODE_ENV === 'production') {
-    return res.status(statusCode).json({ success: false, message });
-  }
-  return res.status(statusCode).json({ success: false, message, errors: err.stack });
-});
+app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
 

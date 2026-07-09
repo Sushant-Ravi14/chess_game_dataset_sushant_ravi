@@ -290,7 +290,7 @@ const getOpeningSuccessRates = async () => {
         whiteWinRate: { $multiply: [{ $divide: ["$whiteWins", "$totalGames"] }, 100] },
         blackWinRate: { $multiply: [{ $divide: ["$blackWins", "$totalGames"] }, 100] },
         drawRate: { $multiply: [{ $divide: ["$draws", "$totalGames"] }, 100] },
-        _id: 0
+        _id: 1
       }
     },
     { $sort: { totalGames: -1 } },

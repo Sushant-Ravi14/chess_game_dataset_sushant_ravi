@@ -1,14 +1,11 @@
 
 const optionsHeadMiddleware = (req, res, next) => {
-  if (req.method === 'OPTIONS') {
-    res.set('Allow', 'GET, POST, PUT, PATCH, DELETE, HEAD, OPTIONS');
-    return res.status(204).end();
-  }
-
+  // HEAD requests: add a resource-available header but let routes handle it
   if (req.method === 'HEAD') {
     res.set('X-Resource-Available', 'true');
   }
 
+  // Let CORS middleware handle OPTIONS preflight properly
   next();
 };
 

@@ -1,10 +1,9 @@
-import React, { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { toggleSidebar } from '../../store/slices/uiSlice';
+// removed
 import { logout } from '../../store/slices/authSlice';
-import { Menu, LogOut, User, Settings as SettingsIcon } from 'lucide-react';
-import { IconButton } from '@mui/material';
+import { LogOut, User, Settings as SettingsIcon } from 'lucide-react';
 
 const Navbar = () => {
   const dispatch = useDispatch();
@@ -40,7 +39,7 @@ const Navbar = () => {
         <div className="flex items-center gap-4">
           
           <h2 className="text-slate-900 dark:text-white font-medium flex items-center gap-2">
-            Welcome back, {user?.name || 'Admin'} 
+            Welcome back, {user?.username || 'Admin'} 
           </h2>
         </div>
 
@@ -50,14 +49,14 @@ const Navbar = () => {
             onClick={() => setMenuOpen(!menuOpen)}
           >
             <div className="flex items-center justify-center bg-gradient-to-b from-[#93C5FD] to-[#3B82F6] text-white font-black w-8 h-8 rounded-full shadow-[0_0_15px_rgba(59, 130, 246,0.3)]">
-              {user?.name?.charAt(0) || 'A'}
+              {user?.username?.charAt(0) || 'A'}
             </div>
           </div>
 
           {menuOpen && (
             <div className="absolute right-0 mt-3 w-56 bg-slate-50 dark:bg-[#161a28] rounded-2xl shadow-xl border border-slate-200 dark:border-[#1a1f33] overflow-hidden z-50">
               <div className="px-5 py-4 border-b border-slate-200 dark:border-[#1a1f33]">
-                <p className="text-sm font-bold text-slate-900 dark:text-white truncate">{user?.name || 'Admin User'}</p>
+                <p className="text-sm font-bold text-slate-900 dark:text-white truncate">{user?.username || 'Admin User'}</p>
                 <p className="text-xs text-slate-500 dark:text-slate-400 truncate mt-0.5">{user?.email || 'admin@example.com'}</p>
               </div>
               

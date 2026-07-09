@@ -1,6 +1,9 @@
 const Match = require('../models/Match');
 const { paginate } = require('../utils/pagination');
 
+// Escape regex special characters to prevent ReDoS attacks
+const escapeRegex = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
 let recentSearches = [];
 const popularSearchesMap = new Map();
 
@@ -15,7 +18,7 @@ const trackSearch = (q) => {
 
 const searchMatches = async (q, query) => {
   trackSearch(q);
-  const regex = new RegExp(q, 'i');
+  const regex = new RegExp(escapeRegex(q), 'i');
   
   const filter = {
     isDeleted: { $ne: true },
@@ -40,7 +43,7 @@ const searchMatches = async (q, query) => {
 
 const searchPlayers = async (q, query) => {
   trackSearch(q);
-  const regex = new RegExp(q, 'i');
+  const regex = new RegExp(escapeRegex(q), 'i');
 
   const filter = {
     isDeleted: { $ne: true },
@@ -69,7 +72,7 @@ const searchPlayers = async (q, query) => {
 
 const searchOpenings = async (q, query) => {
   trackSearch(q);
-  const regex = new RegExp(q, 'i');
+  const regex = new RegExp(escapeRegex(q), 'i');
 
   const filter = {
     isDeleted: { $ne: true },
@@ -307,7 +310,7 @@ const searchOpeningFamily = async (family, query) => {
 };
 
 const searchCheckmatePatterns = async (q, query) => {
-  const regex = new RegExp(q, 'i');
+  const regex = new RegExp(escapeRegex(q), 'i');
   const filter = {
     isDeleted: { $ne: true },
     victory_status: 'mate',
@@ -325,7 +328,7 @@ const searchCheckmatePatterns = async (q, query) => {
 };
 
 const searchEndgames = async (q, query) => {
-  const regex = new RegExp(q, 'i');
+  const regex = new RegExp(escapeRegex(q), 'i');
   const filter = {
     isDeleted: { $ne: true },
     opening_name: regex,

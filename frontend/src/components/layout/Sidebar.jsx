@@ -1,4 +1,3 @@
-import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { setSidebarOpen } from '../../store/slices/uiSlice';
@@ -8,10 +7,8 @@ import {
   Database, 
   BarChart3, 
   Settings,
-  X,
   Crown
 } from 'lucide-react';
-import { IconButton } from '@mui/material';
 
 const navItems = [
   { path: '/dashboard', label: 'Overview', icon: LayoutDashboard },

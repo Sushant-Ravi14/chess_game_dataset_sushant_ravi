@@ -1,17 +1,10 @@
-import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useDispatch, useSelector } from 'react-redux';
-import { toggleTheme, toggleHighContrast } from '../store/slices/uiSlice';
-import { toast } from 'react-hot-toast';
-import { Palette, Monitor } from 'lucide-react';
+import { toggleTheme } from '../store/slices/uiSlice';
 
 const Settings = () => {
   const dispatch = useDispatch();
-  const { theme, highContrast } = useSelector((state) => state.ui);
-
-  const handleSavePreferences = () => {
-    toast.success('Preferences saved successfully');
-  };
+  const { theme } = useSelector((state) => state.ui);
 
   return (
     <div className="max-w-4xl mx-auto space-y-8">

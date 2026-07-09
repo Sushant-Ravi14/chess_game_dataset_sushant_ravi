@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
@@ -18,13 +18,13 @@ const Register = () => {
 
   const formik = useFormik({
     initialValues: {
-      name: '',
+      username: '',
       email: '',
       password: '',
       confirmPassword: '',
     },
     validationSchema: Yup.object({
-      name: Yup.string().required('Required'),
+      username: Yup.string().required('Required'),
       email: Yup.string().email('Invalid email address').required('Required'),
       password: Yup.string().min(8, 'Password must be at least 8 characters').required('Required'),
       confirmPassword: Yup.string()
@@ -33,7 +33,7 @@ const Register = () => {
     }),
     onSubmit: async (values) => {
       // Admin registration expects confirmPassword to match password in the backend
-      const resultAction = await dispatch(registerUser({ ...values, role: 'admin' }));
+      const resultAction = await dispatch(registerUser(values));
       if (registerUser.fulfilled.match(resultAction)) {
         navigate('/dashboard');
       }
@@ -75,22 +75,22 @@ const Register = () => {
           {/* Name */}
           <div>
             <input
-              id="name"
-              name="name"
+              id="username"
+              name="username"
               type="text"
               placeholder="Full Name"
               className={`w-full px-4 py-3 rounded-xl border ${
-                formik.touched.name && formik.errors.name
+                formik.touched.username && formik.errors.username
                   ? 'border-red-500'
                   : 'border-slate-200 dark:border-slate-600'
               } bg-transparent dark:text-slate-900 dark:text-white placeholder:text-slate-500 dark:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-[13px]`}
-              value={formik.values.name}
+              value={formik.values.username}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
               disabled={loading}
             />
-            {formik.touched.name && formik.errors.name && (
-              <p className="mt-1 text-xs text-red-500 px-1">{formik.errors.name}</p>
+            {formik.touched.username && formik.errors.username && (
+              <p className="mt-1 text-xs text-red-500 px-1">{formik.errors.username}</p>
             )}
           </div>
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Search, Shield } from 'lucide-react';
 import api from '../services/api';
@@ -8,17 +8,8 @@ const Users = () => {
   const [players, setPlayers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
-  const [totalCount, setTotalCount] = useState(0);
 
-  // Debounced search
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      fetchPlayers();
-    }, 300);
-    return () => clearTimeout(timer);
-  }, [search]);
-
-  const fetchPlayers = async () => {
+  const fetchPlayers = useCallback(async () => {
     setLoading(true);
     try {
       const response = await api.get('/players', {
@@ -26,14 +17,21 @@ const Users = () => {
       });
       const data = response.data.data || response.data;
       setPlayers(data);
-      setTotalCount(response.data.meta?.total || data.length || 0);
     } catch (error) {
       console.error('Failed to fetch players', error);
       toast.error('Failed to fetch players');
     } finally {
       setLoading(false);
     }
-  };
+  }, [search]);
+
+  // Debounced search
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      fetchPlayers();
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [fetchPlayers]);
 
   return (
     <div className="space-y-6">

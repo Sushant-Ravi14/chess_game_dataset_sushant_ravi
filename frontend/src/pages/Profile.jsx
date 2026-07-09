@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useSelector, useDispatch } from 'react-redux';
 import { useFormik } from 'formik';
@@ -16,7 +16,7 @@ const Profile = () => {
 
   const formik = useFormik({
     initialValues: {
-      username: user?.name || '',
+      username: user?.username || '',
       email: user?.email || '',
     },
     enableReinitialize: true,
@@ -27,14 +27,14 @@ const Profile = () => {
     onSubmit: async (values) => {
       setSaving(true);
       try {
-        const res = await api.put('/admin/auth/profile', {
-          name: values.username,
+        const res = await api.patch('/auth/profile', {
+          username: values.username,
           email: values.email
         });
         const updatedUser = res.data.data?.user || res.data.user;
         dispatch(updateUser(updatedUser));
         toast.success('Profile updated successfully');
-      } catch (error) {
+      } catch {
         toast.error('Failed to update profile');
       } finally {
         setSaving(false);
@@ -57,11 +57,11 @@ const Profile = () => {
         <div className="bg-white dark:bg-[#111420] rounded-[2rem] border border-slate-200 dark:border-[#1a1f33] shadow-xl p-8 flex flex-col items-center justify-center min-h-[400px]">
           <div className="w-32 h-32 rounded-full bg-gradient-to-b from-[#93C5FD] to-[#3B82F6] shadow-[0_0_40px_rgba(59, 130, 246,0.3)] flex items-center justify-center mb-6">
             <span className="text-5xl font-black text-white">
-              {user?.name?.charAt(0) || 'A'}
+              {user?.username?.charAt(0) || 'A'}
             </span>
           </div>
           
-          <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-1">{user?.name || 'Admin User'}</h2>
+          <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-1">{user?.username || 'Admin User'}</h2>
           <p className="text-slate-500 dark:text-slate-400 text-sm mb-6">{user?.email || 'admin@example.com'}</p>
           
           <div className="px-6 py-1.5 rounded-full bg-slate-100 dark:bg-[#1a1f33] border border-[#2d3748]">

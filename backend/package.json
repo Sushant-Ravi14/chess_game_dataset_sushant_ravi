@@ -1,8 +1,11 @@
 {
-  "name": "backend",
+  "name": "chess-analytics-backend",
   "version": "1.0.0",
-  "description": "backend for chess analysis api",
+  "description": "Backend API for ChessAnalytics - Chess Game Dataset Analysis",
   "main": "server.js",
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js"

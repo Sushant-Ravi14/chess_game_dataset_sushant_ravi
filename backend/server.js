@@ -23,6 +23,9 @@ const optionsHeadMiddleware = require('./middlewares/optionsHeadMiddleware');
 
 const app = express();
 
+// Trust proxy for rate limiting behind reverse proxies (Render, etc.)
+app.set('trust proxy', 1);
+
 app.use(helmet());
 
 const allowedOrigins = process.env.ALLOWED_ORIGINS 
@@ -75,9 +78,20 @@ const PORT = process.env.PORT || 5000;
 
 const startServer = async () => {
   await connectDB();
-  app.listen(PORT, () => {
-    console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
+  const server = app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Server running in ${process.env.NODE_ENV || 'development'} mode on port ${PORT}`);
   });
+
+  // Graceful shutdown
+  const shutdown = (signal) => {
+    console.log(`${signal} received. Shutting down gracefully...`);
+    server.close(() => {
+      console.log('Server closed.');
+      process.exit(0);
+    });
+  };
+  process.on('SIGTERM', () => shutdown('SIGTERM'));
+  process.on('SIGINT', () => shutdown('SIGINT'));
 };
 
 startServer();

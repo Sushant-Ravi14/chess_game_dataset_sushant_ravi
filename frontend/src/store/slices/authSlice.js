@@ -5,7 +5,7 @@ const token = localStorage.getItem('token');
 let storedUser = null;
 try {
   storedUser = JSON.parse(localStorage.getItem('user'));
-} catch (e) {
+} catch {
   console.error("Failed to parse user from localStorage");
 }
 
@@ -19,7 +19,7 @@ const initialState = {
 
 export const loginUser = createAsyncThunk('auth/login', async (credentials, { rejectWithValue }) => {
   try {
-    const response = await api.post('/admin/auth/login', credentials);
+    const response = await api.post('/auth/login', credentials);
     const data = response.data.data || response.data;
     const token = data.accessToken || data.token;
     if (token) localStorage.setItem('token', token);
@@ -32,7 +32,7 @@ export const loginUser = createAsyncThunk('auth/login', async (credentials, { re
 
 export const registerUser = createAsyncThunk('auth/register', async (userData, { rejectWithValue }) => {
   try {
-    const response = await api.post('/admin/auth/register', userData);
+    const response = await api.post('/auth/register', userData);
     const data = response.data.data || response.data;
     const token = data.accessToken || data.token;
     if (token) localStorage.setItem('token', token);

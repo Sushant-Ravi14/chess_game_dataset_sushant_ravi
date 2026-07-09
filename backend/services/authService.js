@@ -25,7 +25,7 @@ const register = async (data) => {
   }
 
   const userCount = await User.countDocuments();
-  const role = (userCount === 0 || username.startsWith('admin_') || email.startsWith('admin_')) ? 'admin' : 'user';
+  const role = userCount === 0 ? 'admin' : 'user';
 
   const user = await User.create({
     username,
@@ -88,10 +88,15 @@ const login = async (email, password) => {
 const refreshToken = async (token) => {
   try {
     const decoded = jwt.verify(token, process.env.JWT_REFRESH_SECRET);
-    const user = await User.findById(decoded.id);
+    const user = await User.findById(decoded.id).select('+refreshToken');
 
     if (!user || user.isBanned) {
       throw Object.assign(new Error('Invalid token or user status'), { statusCode: 401 });
+    }
+
+    // Validate the provided token matches the one stored in DB
+    if (user.refreshToken !== token) {
+      throw Object.assign(new Error('Refresh token has been revoked'), { statusCode: 401 });
     }
 
     const tokens = generateTokens(user._id);
@@ -100,6 +105,7 @@ const refreshToken = async (token) => {
 
     return tokens;
   } catch (err) {
+    if (err.statusCode) throw err;
     throw Object.assign(new Error('Invalid or expired refresh token'), { statusCode: 401 });
   }
 };

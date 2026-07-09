@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Search, CheckCircle2, MinusCircle, TrendingUp, ChevronDown, ChevronLeft, ChevronRight, Database } from 'lucide-react';
 import api from '../services/api';
@@ -16,15 +16,6 @@ const Matches = () => {
   const [activeFilter, setActiveFilter] = useState({ label: 'All Matches', value: {} });
   const filterRef = useRef(null);
 
-  // Debounce Search
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setPage(1);
-      fetchAllMatches();
-    }, 400);
-    return () => clearTimeout(timer);
-  }, [search, activeFilter]);
-
   // Click outside filter menu
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -36,7 +27,7 @@ const Matches = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const fetchAllMatches = async () => {
+  const fetchAllMatches = useCallback(async () => {
     setLoading(true);
     try {
       // Fetching all data at once (using a very large limit)
@@ -56,7 +47,16 @@ const Matches = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [search, activeFilter]);
+  // Debounce Search
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setPage(1);
+      fetchAllMatches();
+    }, 400);
+    return () => clearTimeout(timer);
+  }, [fetchAllMatches]);
+
 
   const handlePageChange = (newPage) => {
     const totalPages = Math.ceil(allMatches.length / rowsPerPage);
@@ -172,8 +172,6 @@ const Matches = () => {
           {displayedMatches.map((match) => {
             const isWhiteWin = match.winner === 'white';
             const isBlackWin = match.winner === 'black';
-            const isDraw = match.winner === 'draw';
-            
             // Upset Logic (100+ rating diff win)
             const whiteRating = parseInt(match.white_rating) || 0;
             const blackRating = parseInt(match.black_rating) || 0;

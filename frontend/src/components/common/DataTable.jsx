@@ -1,4 +1,3 @@
-import React, { useState } from 'react';
 import { 
   Table, 
   TableBody, 
@@ -6,12 +5,10 @@ import {
   TableContainer, 
   TableHead, 
   TableRow, 
-  Paper, 
   TablePagination,
-  IconButton,
-  Chip
+  IconButton
 } from '@mui/material';
-import { Edit, Trash2, MoreVertical } from 'lucide-react';
+import { Edit, Trash2, Database } from 'lucide-react';
 
 const DataTable = ({ columns, data, loading, onEdit, onDelete, totalCount, page, setPage, rowsPerPage, setRowsPerPage }) => {
   const handleChangePage = (event, newPage) => {

@@ -23,7 +23,7 @@ router.get('/checkmate-frequency', analyticsController.getCheckmateFrequency);
 router.get('/draw-frequency', analyticsController.getDrawFrequency);
 router.get('/resignation-frequency', analyticsController.getResignationFrequency);
 router.get('/timeouts', analyticsController.getTimeoutFrequency);
-router.get('/opening-success', analyticsController.getOpeningSuccessRates);
+router.get('/opening-success-rates', analyticsController.getOpeningSuccessRates);
 router.get('/player-growth', analyticsController.getPlayerGrowth);
 router.get('/hourly-activity', analyticsController.getHourlyActivity);
 router.get('/top-games', analyticsController.getTopGames);

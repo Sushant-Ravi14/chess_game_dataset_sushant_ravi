@@ -2,6 +2,24 @@ const statsService = require('../services/statsService');
 const { sendSuccess } = require('../utils/apiResponse');
 const asyncHandler = require('../utils/asyncHandler');
 
+const getDashboardStats = asyncHandler(async (req, res) => {
+  const [totalMatches, totalPlayers, averageRating, whiteWinRate] = await Promise.all([
+    statsService.getTotalMatches(),
+    statsService.getTotalPlayers(),
+    statsService.getAverageRating(),
+    statsService.getWhiteWinRate()
+  ]);
+
+  sendSuccess(res, 200, 'Dashboard stats retrieved successfully', {
+    totalMatches,
+    totalPlayers,
+    averageRating,
+    rates: {
+      whiteWinRate
+    }
+  });
+});
+
 const getTotalMatches = asyncHandler(async (req, res) => {
   const count = await statsService.getTotalMatches();
   sendSuccess(res, 200, 'Total matches count retrieved successfully', { count });
@@ -79,6 +97,7 @@ const getYearlyGamesStats = asyncHandler(async (req, res) => {
 });
 
 module.exports = {
+  getDashboardStats,
   getTotalMatches,
   getTotalPlayers,
   getAverageRating,

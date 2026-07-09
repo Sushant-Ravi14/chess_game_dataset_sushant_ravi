@@ -1,7 +1,12 @@
 const express = require('express');
 const systemController = require('../controllers/systemController');
+const { protect, restrictTo } = require('../middlewares/authMiddleware');
 
 const router = express.Router();
+
+// All system routes require admin authentication
+router.use(protect);
+router.use(restrictTo('admin'));
 
 router.get('/info', systemController.getSystemInfo);
 router.get('/logs', systemController.getSystemLogs);

@@ -7,11 +7,25 @@ const buildFilter = (query) => {
   }
 
   if (query.time_control) {
-    filter.increment_code = query.time_control;
+    // Sanitize: only allow alphanumeric and + characters in time control
+    const sanitized = String(query.time_control).replace(/[^a-zA-Z0-9+]/g, '');
+    if (sanitized) filter.increment_code = sanitized;
   }
 
   if (query.winner) {
-    filter.winner = query.winner.toLowerCase();
+    const allowedWinners = ['white', 'black', 'draw'];
+    const val = query.winner.toLowerCase();
+    if (allowedWinners.includes(val)) {
+      filter.winner = val;
+    }
+  }
+
+  if (query.victory_status) {
+    const allowedStatuses = ['mate', 'resign', 'outoftime', 'draw', 'timeout'];
+    const val = query.victory_status.toLowerCase();
+    if (allowedStatuses.includes(val)) {
+      filter.victory_status = val;
+    }
   }
 
   const andExprs = [];
